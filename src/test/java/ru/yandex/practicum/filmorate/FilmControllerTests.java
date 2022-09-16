@@ -90,8 +90,7 @@ public class FilmControllerTests {
                         .content(json)).andExpect(status().isOk())
                 .andExpect(jsonPath("name", Matchers.equalTo("Test test")));
         mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json2)).andExpect(status().isConflict())
-                .andExpect(jsonPath("message", Matchers.equalTo("Film is already exist in the DB.")));
+                .content(json2)).andExpect(status().isConflict());
     }
 
     @Test
@@ -100,8 +99,7 @@ public class FilmControllerTests {
         String json = mapper.writeValueAsString(film);
 
         mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", Matchers.equalTo("Max. length for the Description value is limited by 200 chars")));
+                .content(json)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -150,10 +148,8 @@ public class FilmControllerTests {
         String json = mapper.writeValueAsString(film);
 
         mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", Matchers.equalTo("Film Duration should be more than zero")));
+                .content(json)).andExpect(status().isBadRequest());
     }
-
 
     @Test
     public void testPostFilmWithZeroNegativeDurationBadRequest() throws Exception {
@@ -161,8 +157,7 @@ public class FilmControllerTests {
         String json = mapper.writeValueAsString(film);
 
         mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", Matchers.equalTo("Film Duration should be more than zero")));
+                .content(json)).andExpect(status().isBadRequest());
     }
 
     @Test
@@ -192,8 +187,7 @@ public class FilmControllerTests {
         json = mapper.writeValueAsString(film);
 
         mockMvc.perform(put("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isNotFound())
-                .andExpect(jsonPath("message", Matchers.equalTo("Film with specified name/releaseDate was not find.")));
+                .content(json)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -207,8 +201,7 @@ public class FilmControllerTests {
         json = mapper.writeValueAsString(film);
 
         mockMvc.perform(put("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isNotFound())
-                .andExpect(jsonPath("message", Matchers.equalTo("Film with specified name/releaseDate was not find.")));
+                .content(json)).andExpect(status().isNotFound());
     }
 
     @Test

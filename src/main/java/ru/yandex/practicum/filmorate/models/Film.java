@@ -4,9 +4,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.NonNull;
+import org.hibernate.validator.constraints.Length;
 import ru.yandex.practicum.filmorate.utils.LocalDateDeserializer;
 import ru.yandex.practicum.filmorate.utils.LocalDateSerializer;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Past;
 import java.time.LocalDate;
 
 @Data
@@ -14,17 +18,20 @@ public class Film {
     private Long id;
 
     @NonNull
+    @NotBlank
     private String name;
 
     @NonNull
+    @Length(max = 200)
     private String description;
 
     @NonNull
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
+    @Past()
     private LocalDate releaseDate;
 
-    @NonNull
+    @Min(1)
     private long duration;
 
     public Film() {

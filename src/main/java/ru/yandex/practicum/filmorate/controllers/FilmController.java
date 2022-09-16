@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,12 @@ public class FilmController {
     }
 
     @PostMapping(value = "/films")
-    public ResponseEntity<?> create(@RequestBody Film film) {
+    public ResponseEntity<?> create(@Valid @RequestBody Film film) {
         validate(film);
         if (films.stream()
                 .anyMatch(k -> k.getName().equals(film.getName())
                         && k.getReleaseDate().equals(film.getReleaseDate()))) {
-            log.error("Фильм с названием {} и датой выпуска {} является дубликатом уже существующего фильма", film.getName(), film.getReleaseDate());
-            throw new AlreadyExistException("Film is already exist in the DB.");
+            throw new AlreadyExistException("Film with name " + film.getName() + " and release date " + film.getReleaseDate() + " already exists in the DB.");
         }
         film.setId(idCounter);
         films.add(film);
@@ -44,14 +44,13 @@ public class FilmController {
     }
 
     @PutMapping(value = "/films")
-    public ResponseEntity<?> update(@RequestBody Film film) {
+    public ResponseEntity<?> update(@Valid @RequestBody Film film) {
         validate(film);
         Optional<Film> existedFilm = films.stream()
                 .filter(k -> k.getId().equals(film.getId()))
                 .findFirst();
         if (existedFilm.isEmpty()) {
-            log.error("Фильм с id {} не существует в базе", film.getId());
-            throw new NotExistException("Film with specified name/releaseDate was not find.");
+            throw new NotExistException("Film with id" + film.getId() + "was not find.");
         } else {
             existedFilm.get().setReleaseDate(film.getReleaseDate());
             existedFilm.get().setDescription(film.getDescription());
@@ -63,21 +62,10 @@ public class FilmController {
     }
 
     private void validate(Film film) {
-        if (film.getName().isBlank()) {
-            log.warn("В запросе передано пустое имя фильма");
-            throw new ValidationException("Film name can't be empty");
-        }
-        if (film.getDescription().length() > 200) {
-            log.warn("В запросе передано невалидное описание фильма -  {}", film.getDescription());
-            throw new ValidationException("Max. length for the Description value is limited by 200 chars");
-        }
         if (film.getReleaseDate().isBefore(MIN_DATE)) {
             log.warn("В запросе передана невалидная дата релиза фильма -  {}", film.getReleaseDate());
             throw new ValidationException("Release date can be less than 28/12/1895");
         }
-        if (film.getDuration() < 0 || film.getDuration() == 0) {
-            log.warn("В запросе передана невалидная продолжительность фильма -  {}", film.getDuration());
-            throw new ValidationException("Film Duration should be more than zero");
-        }
+
     }
 }

@@ -82,8 +82,7 @@ public class UserControllerTests {
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON)
                 .content(json));
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("message", Matchers.equalTo("User account is already exist.")));
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -92,8 +91,7 @@ public class UserControllerTests {
         String json = mapper.writeValueAsString(user);
 
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", Matchers.equalTo("Email should contain @ char")));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -102,8 +100,7 @@ public class UserControllerTests {
         String json = mapper.writeValueAsString(user);
 
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", Matchers.equalTo("Email can't be empty")));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -112,8 +109,7 @@ public class UserControllerTests {
         String json = mapper.writeValueAsString(user);
 
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", Matchers.equalTo("Birthday can be in the future")));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -131,8 +127,7 @@ public class UserControllerTests {
         String json = mapper.writeValueAsString(user);
 
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", Matchers.equalTo("Login can't contain whitespaces")));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -141,8 +136,7 @@ public class UserControllerTests {
         String json = mapper.writeValueAsString(user);
 
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", Matchers.equalTo("Login can't be empty")));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -173,7 +167,6 @@ public class UserControllerTests {
         json = mapper.writeValueAsString(user);
 
         mockMvc.perform(put("/users").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isNotFound())
-                .andExpect(jsonPath("message", Matchers.equalTo("User with specified email is not find.")));
+                .content(json)).andExpect(status().isNotFound());
     }
 }
