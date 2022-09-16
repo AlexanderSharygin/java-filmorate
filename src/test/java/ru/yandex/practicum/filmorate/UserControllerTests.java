@@ -13,13 +13,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.yandex.practicum.filmorate.controllers.ExceptionApiHandler;
 import ru.yandex.practicum.filmorate.controllers.UserController;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.models.User;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,7 +71,7 @@ public class UserControllerTests {
         String json = mapper.writeValueAsString(user);
 
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON)
-                .content(json)).andExpect(status().isOk())
+                        .content(json)).andExpect(status().isOk())
                 .andExpect(jsonPath("name", Matchers.equalTo("u1")));
     }
 
@@ -84,7 +82,7 @@ public class UserControllerTests {
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON)
                 .content(json));
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(json))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isConflict())
                 .andExpect(jsonPath("message", Matchers.equalTo("User account is already exist.")));
     }
 
@@ -154,6 +152,7 @@ public class UserControllerTests {
                 .content(json));
         user.setName("Test");
         user.setLogin("TestLogin");
+        user.setId(1L);
         json = mapper.writeValueAsString(user);
 
         mockMvc.perform(put("/users").contentType(MediaType.APPLICATION_JSON)
@@ -170,10 +169,11 @@ public class UserControllerTests {
         user.setName("Test");
         user.setLogin("TestLogin");
         user.setEmail("TestLogin@qwe.rt");
+        user.setId(2L);
         json = mapper.writeValueAsString(user);
 
         mockMvc.perform(put("/users").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isBadRequest())
+                        .content(json)).andExpect(status().isNotFound())
                 .andExpect(jsonPath("message", Matchers.equalTo("User with specified email is not find.")));
     }
 }

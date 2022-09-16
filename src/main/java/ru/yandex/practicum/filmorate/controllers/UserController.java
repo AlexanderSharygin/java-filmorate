@@ -2,15 +2,11 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
-import ru.yandex.practicum.filmorate.exceptions.UserIsNotExistException;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
+import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.models.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,7 +20,7 @@ import java.util.regex.Pattern;
 public class UserController {
 
     private final List<User> users = new ArrayList<>();
-    private int idCounter = 1;
+    private long idCounter = 1;
 
     @GetMapping("/users")
     public ResponseEntity<?> getAll() {
@@ -35,10 +31,11 @@ public class UserController {
     @PostMapping(value = "/users")
     public ResponseEntity<?> create(@RequestBody User user) {
         validate(user);
+        checkName(user);
         if (users.stream()
                 .anyMatch(k -> k.getEmail().equals(user.getEmail()))) {
             log.error("Аккаунт пользователя с email {} уже существует", user.getEmail());
-            throw new UserAlreadyExistException("User account is already exist.");
+            throw new AlreadyExistException("User account is already exist.");
         }
         user.setId(idCounter);
         users.add(user);
@@ -50,12 +47,13 @@ public class UserController {
     @PutMapping(value = "/users")
     public ResponseEntity<?> update(@RequestBody User user) {
         validate(user);
+        checkName(user);
         Optional<User> existedUser = users.stream()
-                .filter(k -> k.getEmail().equals(user.getEmail()))
+                .filter(k -> k.getId().equals(user.getId()))
                 .findFirst();
         if (existedUser.isEmpty()) {
-            log.error("Аккаунт пользователя с email {} не существует", user.getEmail());
-            throw new UserIsNotExistException("User with specified email is not find.");
+            log.error("Аккаунт пользователя с id {} не существует", user.getId());
+            throw new NotExistException("User with specified email is not find.");
         } else {
             existedUser.get().setEmail(user.getEmail());
             existedUser.get().setLogin(user.getLogin());
@@ -91,6 +89,9 @@ public class UserController {
             log.warn("В запросе передано невалидная дата рождения -  {}", user.getBirthday());
             throw new ValidationException("Birthday can be in the future");
         }
+    }
+
+    private void checkName(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             log.warn("В запросе не передано Имя пользователя email {}. В качестве имени будет использован login  {}",
                     user.getEmail(), user.getLogin());

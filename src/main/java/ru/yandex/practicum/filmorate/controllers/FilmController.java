@@ -2,15 +2,11 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exceptions.FilmAlreadyExistsException;
-import ru.yandex.practicum.filmorate.exceptions.FilmIsNotExistException;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
+import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.models.Film;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,7 +19,7 @@ public class FilmController {
 
     private static final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
     private final List<Film> films = new ArrayList<>();
-    private int idCounter = 0;
+    private long idCounter = 1;
 
     @GetMapping("/films")
     public ResponseEntity<?> getAll() {
@@ -38,7 +34,7 @@ public class FilmController {
                 .anyMatch(k -> k.getName().equals(film.getName())
                         && k.getReleaseDate().equals(film.getReleaseDate()))) {
             log.error("Фильм с названием {} и датой выпуска {} является дубликатом уже существующего фильма", film.getName(), film.getReleaseDate());
-            throw new FilmAlreadyExistsException("Film is already exist in the DB.");
+            throw new AlreadyExistException("Film is already exist in the DB.");
         }
         film.setId(idCounter);
         films.add(film);
@@ -51,12 +47,11 @@ public class FilmController {
     public ResponseEntity<?> update(@RequestBody Film film) {
         validate(film);
         Optional<Film> existedFilm = films.stream()
-                .filter(k -> k.getName().equals(film.getName())
-                        && k.getReleaseDate().equals(film.getReleaseDate()))
+                .filter(k -> k.getId().equals(film.getId()))
                 .findFirst();
         if (existedFilm.isEmpty()) {
-            log.error("Фильм {} с датой выпуска {} не существует в базе", film.getName(), film.getReleaseDate());
-            throw new FilmIsNotExistException("Film with specified name/releaseDate was not find.");
+            log.error("Фильм с id {} не существует в базе", film.getId());
+            throw new NotExistException("Film with specified name/releaseDate was not find.");
         } else {
             existedFilm.get().setReleaseDate(film.getReleaseDate());
             existedFilm.get().setDescription(film.getDescription());
@@ -80,7 +75,7 @@ public class FilmController {
             log.warn("В запросе передана невалидная дата релиза фильма -  {}", film.getReleaseDate());
             throw new ValidationException("Release date can be less than 28/12/1895");
         }
-        if (film.getDuration().isNegative() || film.getDuration().isZero()) {
+        if (film.getDuration() < 0 || film.getDuration() == 0) {
             log.warn("В запросе передана невалидная продолжительность фильма -  {}", film.getDuration());
             throw new ValidationException("Film Duration should be more than zero");
         }

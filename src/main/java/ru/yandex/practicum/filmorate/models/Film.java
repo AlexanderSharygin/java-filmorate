@@ -1,19 +1,17 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.NonNull;
-import ru.yandex.practicum.filmorate.utils.DurationSerializer;
 import ru.yandex.practicum.filmorate.utils.LocalDateDeserializer;
 import ru.yandex.practicum.filmorate.utils.LocalDateSerializer;
 
-import java.time.Duration;
 import java.time.LocalDate;
 
 @Data
 public class Film {
-    private Integer id;
+    private Long id;
 
     @NonNull
     private String name;
@@ -27,13 +25,12 @@ public class Film {
     private LocalDate releaseDate;
 
     @NonNull
-    @JsonSerialize(using = DurationSerializer.class)
-    private Duration duration;
+    private long duration;
 
     public Film() {
     }
 
-    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, @NonNull Duration duration) {
+    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
