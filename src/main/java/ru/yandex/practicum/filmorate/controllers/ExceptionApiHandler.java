@@ -42,8 +42,14 @@ public class ExceptionApiHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> commonValidation(MethodArgumentNotValidException e) {
-        String message = e.getBindingResult().getFieldErrors().stream().map(FieldError::getField).findFirst().get() + " - " +
-                e.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage).findFirst().get();
+        var items = e.getBindingResult()
+                .getFieldErrors();
+        String message = items.stream()
+                .map(FieldError::getField)
+                .findFirst().get() + " - "
+                + items.stream()
+                .map(FieldError::getDefaultMessage)
+                .findFirst().get();
         log.warn(message);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
