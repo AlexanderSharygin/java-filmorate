@@ -1,48 +1,47 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
-import ru.yandex.practicum.filmorate.exceptions.NotExistException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.services.FilmService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @Slf4j
 public class FilmController {
 
+    private final FilmService filmService;
 
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping("/films")
-    public ResponseEntity<?> getAll() {
-        log.info("Текущее количество фильмов: {}", films.size());
-        return ResponseEntity.ok(films);
+    public List<Film> getAllFilms() {
+        return filmService.getAll();
     }
 
     @PostMapping(value = "/films")
-    public ResponseEntity<?> create(@Valid @RequestBody Film film) {
-        validate(film);
-
+    public Film addFilm(@Valid @RequestBody Film film) {
+        return filmService.add(film);
     }
 
     @PutMapping(value = "/films")
-    public ResponseEntity<?> update(@Valid @RequestBody Film film) {
-        validate(film);
-
+    public Film updateFilm(@Valid @RequestBody Film film) {
+        return filmService.update(film);
     }
 
-    private void validate(Film film) {
-        if (film.getReleaseDate().isBefore(MIN_DATE)) {
-            log.warn("В запросе передана невалидная дата релиза фильма -  {}", film.getReleaseDate());
-            throw new ValidationException("Release date can be less than 28/12/1895");
-        }
+    @DeleteMapping(value = "/films/{id}")
+    public Film removerFilm(@PathVariable("id") Integer filmId) {
+        return filmService.remove(filmId);
+    }
 
+    @GetMapping("/films/{id}")
+    public Film getFilmById(@PathVariable("id") Integer filmId) {
+        return filmService.getById(filmId);
     }
 }

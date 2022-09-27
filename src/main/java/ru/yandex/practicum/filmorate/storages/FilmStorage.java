@@ -2,11 +2,12 @@ package ru.yandex.practicum.filmorate.storages;
 
 import ru.yandex.practicum.filmorate.models.Film;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface FilmStorage {
 
-    List<Film> getAll();
+    HashMap<Long,Film> getFilms();
 
     Film getById(long id);
 
@@ -14,6 +15,6 @@ public interface FilmStorage {
 
     Film update(Film film);
 
-    boolean remove(Film film);
+    Film remove(long id);
 
 }

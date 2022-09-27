@@ -2,11 +2,12 @@ package ru.yandex.practicum.filmorate.storages;
 
 import ru.yandex.practicum.filmorate.models.User;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface UserStorage {
 
-    List<User> getAll();
+    HashMap<Long, User> getUsers();
 
     User getById(long id);
 
@@ -14,5 +15,5 @@ public interface UserStorage {
 
     User update(User user);
 
-    boolean remove(User user);
+    User remove(long id);
 }
