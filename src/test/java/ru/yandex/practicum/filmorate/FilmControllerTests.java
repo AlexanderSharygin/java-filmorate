@@ -9,28 +9,43 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.yandex.practicum.filmorate.controllers.ExceptionApiHandler;
 import ru.yandex.practicum.filmorate.controllers.FilmController;
+import ru.yandex.practicum.filmorate.controllers.UserController;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.services.FilmService;
+import ru.yandex.practicum.filmorate.services.UserService;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(FilmController.class)
 public class FilmControllerTests {
 
     private static ObjectMapper mapper;
-    private MockMvc mockMvc;
+
     private Film film;
 
     @InjectMocks
     private FilmController filmController;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private FilmService filmService;
 
     @BeforeAll
     public static void prepare() {
@@ -39,183 +54,92 @@ public class FilmControllerTests {
 
     @BeforeEach
     public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(filmController).setControllerAdvice(new ExceptionApiHandler()).build();
         film = new Film("Test test", "Description", LocalDate.parse("1945-05-09"), 100);
     }
 
     @Test
     public void testPostFilmCorrectDataSuccess() throws Exception {
         String json = mapper.writeValueAsString(film);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isOk())
+        when(filmService.addFilm(film)).thenReturn(film);
+        mockMvc.perform(MockMvcRequestBuilders.post("/films").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("name", Matchers.equalTo("Test test")));
     }
 
-    @Test
-    public void testPostFilmWithDuplicatedNameSuccess() throws Exception {
-        Film film2 = new Film("Test test", "Description", LocalDate.parse("1945-05-10"), 100);
-        String json = mapper.writeValueAsString(film);
-        String json2 = mapper.writeValueAsString(film2);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isOk())
-                .andExpect(jsonPath("name", Matchers.equalTo("Test test")));
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json2)).andExpect(status().isOk())
-                .andExpect(jsonPath("name", Matchers.equalTo("Test test")));
-    }
-
-    @Test
-    public void testPostFilmWithDuplicatedReleaseDateSuccess() throws Exception {
-        Film film2 = new Film("Test test2", "Description", LocalDate.parse("1945-05-09"), 100);
-        String json = mapper.writeValueAsString(film);
-        String json2 = mapper.writeValueAsString(film2);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isOk())
-                .andExpect(jsonPath("name", Matchers.equalTo("Test test")));
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json2)).andExpect(status().isOk())
-                .andExpect(jsonPath("name", Matchers.equalTo("Test test2")));
-    }
-
-    @Test
-    public void testPostFilmWithDuplicatedReleaseDateAndNameBadRequest() throws Exception {
-        Film film2 = new Film("Test test", "Description", LocalDate.parse("1945-05-09"), 100);
-        String json = mapper.writeValueAsString(film);
-        String json2 = mapper.writeValueAsString(film2);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isOk())
-                .andExpect(jsonPath("name", Matchers.equalTo("Test test")));
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                .content(json2)).andExpect(status().isConflict());
-    }
 
     @Test
     public void testPostFilmWith201CharsDescriptionBadRequest() throws Exception {
         film.setDescription(RandomStringUtils.randomAlphabetic(201));
         String json = mapper.writeValueAsString(film);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                .content(json)).andExpect(status().isBadRequest());
+        when(filmService.addFilm(film)).thenReturn(film);
+        mockMvc.perform(MockMvcRequestBuilders.post("/films").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     public void testPostFilmWith200CharsDescriptionSuccess() throws Exception {
         film.setDescription(RandomStringUtils.randomAlphabetic(200));
         String json = mapper.writeValueAsString(film);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isOk())
-                .andExpect(jsonPath("name", Matchers.equalTo("Test test")));
+        when(filmService.addFilm(film)).thenReturn(film);
+        mockMvc.perform(MockMvcRequestBuilders.post("/films").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isOk());
     }
 
     @Test
     public void testPostFilmWithCorrectReleaseDateSuccess() throws Exception {
         film.setReleaseDate(LocalDate.parse("1895-12-28"));
         String json = mapper.writeValueAsString(film);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isOk())
-                .andExpect(jsonPath("name", Matchers.equalTo("Test test")));
-    }
-
-    @Test
-    public void testPostFilmWithInCorrectReleaseDateBadRequest() throws Exception {
-        film.setReleaseDate(LocalDate.parse("1895-12-27"));
-        String json = mapper.writeValueAsString(film);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message", Matchers.equalTo("Release date can be less than 28/12/1895")));
+        when(filmService.addFilm(film)).thenReturn(film);
+        mockMvc.perform(MockMvcRequestBuilders.post("/films").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isOk());
     }
 
     @Test
     public void testPostFilmWithPositiveDurationSuccess() throws Exception {
         film.setDuration(1);
         String json = mapper.writeValueAsString(film);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isOk())
-                .andExpect(jsonPath("name", Matchers.equalTo("Test test")));
+        when(filmService.addFilm(film)).thenReturn(film);
+        mockMvc.perform(MockMvcRequestBuilders.post("/films").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isOk());
     }
 
     @Test
     public void testPostFilmWithZeroDurationBadRequest() throws Exception {
         film.setDuration(0);
         String json = mapper.writeValueAsString(film);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                .content(json)).andExpect(status().isBadRequest());
+        when(filmService.addFilm(film)).thenReturn(film);
+        mockMvc.perform(MockMvcRequestBuilders.post("/films").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     public void testPostFilmWithZeroNegativeDurationBadRequest() throws Exception {
         film.setDuration(-1);
         String json = mapper.writeValueAsString(film);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                .content(json)).andExpect(status().isBadRequest());
+        when(filmService.addFilm(film)).thenReturn(film);
+        mockMvc.perform(MockMvcRequestBuilders.post("/films").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     public void testPutFilmCorrectDataSuccess() throws Exception {
         String json = mapper.writeValueAsString(film);
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                .content(json));
+        when(filmService.addFilm(film)).thenReturn(film);
+        mockMvc.perform(MockMvcRequestBuilders.post("/films").contentType(MediaType.APPLICATION_JSON).content(json));
         film.setDescription("Upd");
         film.setDuration(12);
         film.setId(1L);
         json = mapper.writeValueAsString(film);
-
-        mockMvc.perform(put("/films").contentType(MediaType.APPLICATION_JSON)
-                        .content(json)).andExpect(status().isOk())
-                .andExpect(jsonPath("description", Matchers.equalTo("Upd")))
-                .andExpect(jsonPath("duration", Matchers.equalTo(12)));
-    }
-
-    @Test
-    public void testPutFilmSameNameDifferentReleaseDateBadRequest() throws Exception {
-        String json = mapper.writeValueAsString(film);
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                .content(json));
-        film.setDescription("Upd");
-        film.setDuration(12);
-        film.setReleaseDate(LocalDate.parse("1999-02-01"));
-        json = mapper.writeValueAsString(film);
-
-        mockMvc.perform(put("/films").contentType(MediaType.APPLICATION_JSON)
-                .content(json)).andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void testPutFilmDifferentNameAndSameReleaseDateBadRequest() throws Exception {
-        String json = mapper.writeValueAsString(film);
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                .content(json));
-        film.setDescription("Upd");
-        film.setDuration(12);
-        film.setName("1999-02-01");
-        json = mapper.writeValueAsString(film);
-
-        mockMvc.perform(put("/films").contentType(MediaType.APPLICATION_JSON)
-                .content(json)).andExpect(status().isNotFound());
+        mockMvc.perform(MockMvcRequestBuilders.put("/films").contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isOk());
     }
 
     @Test
     public void testGetUsersSuccess() throws Exception {
         Film film2 = new Film("Test test2", "Description", LocalDate.parse("1945-05-09"), 100);
-        String json = mapper.writeValueAsString(film);
-        String json2 = mapper.writeValueAsString(film2);
-
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                .content(json));
-        mockMvc.perform(post("/films").contentType(MediaType.APPLICATION_JSON)
-                .content(json2));
-
-        mockMvc.perform(get("/films")).andExpect(status().isOk()).andExpect(jsonPath("$", Matchers.hasSize(2)))
+        when(filmService.getAll())
+                .thenReturn(List.of(film, film2));
+        mockMvc.perform(MockMvcRequestBuilders.get("/films"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$", Matchers.hasSize(2)))
                 .andExpect(jsonPath("$[0].name", Matchers.equalTo("Test test")))
                 .andExpect(jsonPath("$[1].name", Matchers.equalTo("Test test2")));
     }
