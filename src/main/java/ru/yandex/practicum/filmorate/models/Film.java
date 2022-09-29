@@ -36,18 +36,10 @@ public class Film {
     @Min(1)
     private long duration;
 
-    public Set<Long> getLikeUsers() {
-        return likeUsers;
-    }
-
-    public void setLikeUsers(Set<Long> likeUsers) {
-        this.likeUsers = likeUsers;
-    }
-
     private Set<Long> likeUsers;
 
     public Film() {
-        this.likeUsers=new HashSet<>();
+        this.likeUsers = new HashSet<>();
     }
 
     public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration) {
@@ -55,6 +47,10 @@ public class Film {
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-       this.likeUsers=new HashSet<>();
+        this.likeUsers = new HashSet<>();
+    }
+
+    public Set<Long> getLikeUsers() {
+        return likeUsers;
     }
 }

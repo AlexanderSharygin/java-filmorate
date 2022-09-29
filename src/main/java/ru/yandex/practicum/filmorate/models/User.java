@@ -49,8 +49,4 @@ public class User {
     public Set<Long> getFriends() {
         return friends;
     }
-
-    public void addFriend(long friendId) {
-        friends.add(friendId);
-    }
 }

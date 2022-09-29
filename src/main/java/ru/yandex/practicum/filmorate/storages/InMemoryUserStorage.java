@@ -6,9 +6,7 @@ import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.models.User;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -18,7 +16,7 @@ public class InMemoryUserStorage implements UserStorage {
     private long idCounter = 1;
 
     @Override
-    public HashMap<Long, User> getUsers() {
+    public HashMap<Long, User> getAll() {
         if (users.isEmpty()) {
             throw new NotExistException("Users list is empty.");
         }
@@ -32,6 +30,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (user.isEmpty()) {
             throw new NotExistException("User with id" + id + "was not find.");
         } else {
+            log.info("Найден пользователь с id: {}", user.get().getId());
             return user.get();
         }
     }
@@ -63,18 +62,6 @@ public class InMemoryUserStorage implements UserStorage {
             existedUser.get().setBirthday(user.getBirthday());
             log.info("Обновлен пользователь с email {}", user.getEmail());
             return existedUser.get();
-        }
-    }
-
-    @Override
-    public User remove(long id) {
-        Optional<User> user = Optional.ofNullable(users.get(id));
-        if (user.isEmpty()) {
-            throw new NotExistException("User with id" + id + "was not found.");
-        } else {
-            users.remove(id);
-            log.info("Удален пользователь {}.", user.get().getEmail());
-            return user.get();
         }
     }
 }

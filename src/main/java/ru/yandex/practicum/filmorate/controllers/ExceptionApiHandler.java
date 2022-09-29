@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
+import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.utils.ErrorResponse;
+
+import java.util.List;
 
 @RestControllerAdvice
 @Slf4j
@@ -40,7 +43,7 @@ public class ExceptionApiHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse commonValidation(MethodArgumentNotValidException e) {
-        var items = e.getBindingResult().getFieldErrors();
+        List<FieldError> items = e.getBindingResult().getFieldErrors();
         String message = items.stream()
                 .map(FieldError::getField)
                 .findFirst().get() + " - "
@@ -54,6 +57,14 @@ public class ExceptionApiHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleOtherExceptions(final Throwable e) {
-        return new ErrorResponse(e.getMessage(), "Произошла непредвиденная ошибка.");
+        log.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage(), "Unknown error");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIncorrectParameterException(final IncorrectParameterException e) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage(), "Invalid parameter - " + e.getParameter());
     }
 }
