@@ -21,7 +21,7 @@ public class UserService {
     private UserStorage userStorage;
 
     public List<User> getAll() {
-        return new ArrayList<>(userStorage.getAll().values());
+        return new ArrayList<>(userStorage.getAll());
     }
 
     public User getUserById(long id) {
@@ -29,36 +29,41 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(long id, long friendId) {
-        if (!userStorage.getAll().containsKey(id)) {
+        if (!userStorage.isContainValue(id)) {
             throw new NotExistException("User with specified id " + id + "is not exist");
         }
-        if (!userStorage.getAll().containsKey(friendId)) {
+        if (!userStorage.isContainValue(friendId)) {
             throw new NotExistException("User with specified id " + friendId + "is not exist");
         }
-        Set<Long> firstUserFriends = userStorage.getAll().get(id).getFriends();
-        Set<Long> secondUserFriends = userStorage.getAll().get(friendId).getFriends();
-        Set<Long> commonFriendsId = firstUserFriends.stream().filter(secondUserFriends::contains).collect(Collectors.toSet());
+        Set<Long> firstUserFriends = userStorage.getById(id).getFriends();
+        Set<Long> secondUserFriends = userStorage.getById(friendId).getFriends();
+        Set<Long> commonFriendsId = firstUserFriends.stream()
+                .filter(secondUserFriends::contains)
+                .collect(Collectors.toSet());
+
         return commonFriendsId.stream().map(item -> userStorage.getById(item)).collect(Collectors.toList());
     }
 
     public List<User> getUserFriends(long userId) {
-        Set<Long> friendsId = userStorage.getAll().get(userId).getFriends();
+        Set<Long> friendsId = userStorage.getById(userId).getFriends();
         List<User> friends = new ArrayList<>();
         for (var id : friendsId) {
-            friends.add(userStorage.getAll().get(id));
+            friends.add(userStorage.getById(id));
         }
+
         return friends;
     }
 
     public User addUser(User user) {
         checkName(user);
+
         return this.userStorage.add(user);
     }
 
     public boolean addFriend(long userId, long friendId) {
         if (isInputDataValid(userId, friendId)) {
-            User user = this.userStorage.getAll().get(userId);
-            User friend = this.userStorage.getAll().get(friendId);
+            User user = this.userStorage.getById(userId);
+            User friend = this.userStorage.getById(friendId);
             if (!user.getFriends().contains(friendId)) {
                 user.getFriends().add(friendId);
                 friend.getFriends().add(userId);
@@ -68,20 +73,21 @@ public class UserService {
                 throw new AlreadyExistException("User with id " + userId + " has already friend with user " + friendId);
             }
         }
+
         return false;
     }
 
     public User updateUser(User user) {
         checkName(user);
+
         return this.userStorage.update(user);
     }
 
     public boolean removeFriend(long userId, long friendId) {
         if (isInputDataValid(userId, friendId)) {
-            User user = this.userStorage.getAll().get(userId);
-            User friend = this.userStorage.getAll().get(friendId);
+            User user = this.userStorage.getById(userId);
+            User friend = this.userStorage.getById(friendId);
             if (user.getFriends().contains(friendId)) {
-
                 user.getFriends().remove(friendId);
                 friend.getFriends().remove(userId);
                 log.info("Пользователь с id {} удалил из друзей пользователя с id {}", userId, friendId);
@@ -90,16 +96,18 @@ public class UserService {
                 throw new AlreadyExistException("User with id " + userId + " has not friend with user " + friendId);
             }
         }
+
         return false;
     }
 
     private boolean isInputDataValid(long userId, long friendId) {
-        if (!userStorage.getAll().containsKey(userId)) {
+        if (!userStorage.isContainValue(userId)) {
             throw new NotExistException("User with specified id " + userId + "is not exist");
         }
-        if (!userStorage.getAll().containsKey(friendId)) {
+        if (!userStorage.isContainValue(friendId)) {
             throw new NotExistException("User with specified id " + friendId + "is not exist");
         }
+
         return true;
     }
 

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-    @Value("${server.minDate}")
+    @Value("${filmorate.minDate}")
     private String minDate;
 
 
@@ -34,9 +34,9 @@ public class FilmService {
     }
 
     public List<Film> getMostPopularFilms(int count) {
-        List<Film> films = new ArrayList<>(filmStorage.getAll().values());
-        var sorted = films.stream().sorted((f1, f2) -> f2.getLikeUsers().size() - f1.getLikeUsers().size()).collect(Collectors.toList());
-        return sorted.stream().limit(count)
+        return filmStorage.getAll().stream()
+                .sorted((f1, f2) -> f2.getLikeUsers().size() - f1.getLikeUsers().size())
+                .limit(count)
                 .collect(Collectors.toList());
     }
 
@@ -45,44 +45,50 @@ public class FilmService {
     }
 
     public List<Film> getAll() {
-        return new ArrayList<>(filmStorage.getAll().values());
+        return new ArrayList<>(filmStorage.getAll());
     }
 
     public Film addFilm(Film film) {
         validate(film);
+
         return filmStorage.add(film);
     }
 
     public boolean addLike(long filmId, long userId) {
         if (isInputDataValid(filmId, userId)) {
-            Film film = filmStorage.getAll().get(filmId);
+            Film film = filmStorage.getById(filmId);
             if (!film.getLikeUsers().contains(userId)) {
                 film.getLikeUsers().add(userId);
                 log.info("Пользователь с id {} лайкнул фильм с id {}", userId, filmId);
+
                 return true;
             } else {
                 throw new AlreadyExistException("User with id " + userId + " already like film with id " + filmId);
             }
         }
+
         return false;
     }
 
     public Film updateFilm(Film film) {
         validate(film);
+
         return filmStorage.update(film);
     }
 
     public boolean removeLike(long filmId, long userId) {
         if (isInputDataValid(filmId, userId)) {
-            Film film = filmStorage.getAll().get(filmId);
+            Film film = filmStorage.getById(filmId);
             if (film.getLikeUsers().contains(userId)) {
                 film.getLikeUsers().remove(userId);
                 log.info("Пользователь с id {} удалил лайк у фильма с id {}", userId, filmId);
+
                 return true;
             } else {
                 throw new AlreadyExistException("User with id " + userId + " not like film with id " + filmId);
             }
         }
+
         return false;
     }
 
@@ -93,12 +99,13 @@ public class FilmService {
     }
 
     private boolean isInputDataValid(long filmId, long userId) {
-        if (!filmStorage.getAll().containsKey(filmId)) {
+        if (!filmStorage.isContainValue(filmId)) {
             throw new NotExistException("Film with specified id " + filmId + " is not exist");
         }
-        if (!userStorage.getAll().containsKey(userId)) {
+        if (!userStorage.isContainValue(userId)) {
             throw new NotExistException("User with specified id " + userId + " is not exist");
         }
+
         return true;
     }
 }

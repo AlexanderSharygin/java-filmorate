@@ -6,7 +6,9 @@ import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.models.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -16,12 +18,9 @@ public class InMemoryUserStorage implements UserStorage {
     private long idCounter = 1;
 
     @Override
-    public HashMap<Long, User> getAll() {
-        if (users.isEmpty()) {
-            throw new NotExistException("Users list is empty.");
-        }
+    public List<User> getAll() {
         log.info("Текущее количество пользователей: {}", users.size());
-        return users;
+        return (ArrayList<User>) users.values();
     }
 
     @Override
@@ -31,6 +30,7 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NotExistException("User with id" + id + "was not find.");
         } else {
             log.info("Найден пользователь с id: {}", user.get().getId());
+
             return user.get();
         }
     }
@@ -45,6 +45,7 @@ public class InMemoryUserStorage implements UserStorage {
         users.put(idCounter, user);
         idCounter++;
         log.info("Добавлен пользователь с email {}", user.getEmail());
+
         return user;
     }
 
@@ -61,7 +62,13 @@ public class InMemoryUserStorage implements UserStorage {
             existedUser.get().setName(user.getName());
             existedUser.get().setBirthday(user.getBirthday());
             log.info("Обновлен пользователь с email {}", user.getEmail());
+
             return existedUser.get();
         }
+    }
+
+    @Override
+    public boolean isContainValue(long id) {
+        return users.containsKey(id);
     }
 }

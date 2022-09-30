@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
-import ru.yandex.practicum.filmorate.exceptions.IncorrectParameterException;
+import ru.yandex.practicum.filmorate.exceptions.BadRequestException;
 import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.utils.ErrorResponse;
@@ -23,6 +23,7 @@ public class ExceptionApiHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse customValidation(ValidationException exception) {
         log.warn(exception.getMessage());
+
         return new ErrorResponse(exception.getMessage(), "Validation error");
     }
 
@@ -30,6 +31,7 @@ public class ExceptionApiHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse entityIsAlreadyExist(AlreadyExistException exception) {
         log.warn(exception.getMessage());
+
         return new ErrorResponse(exception.getMessage(), "Entity is already exist!");
     }
 
@@ -37,6 +39,7 @@ public class ExceptionApiHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse entityIsNotExist(NotExistException exception) {
         log.warn(exception.getMessage());
+
         return new ErrorResponse(exception.getMessage(), "Entity is not found!");
     }
 
@@ -51,6 +54,7 @@ public class ExceptionApiHandler {
                 .map(FieldError::getDefaultMessage)
                 .findFirst().get();
         log.warn(message);
+
         return new ErrorResponse(message, "Validation error");
     }
 
@@ -58,13 +62,15 @@ public class ExceptionApiHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleOtherExceptions(final Throwable e) {
         log.warn(e.getMessage());
+
         return new ErrorResponse(e.getMessage(), "Unknown error");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIncorrectParameterException(final IncorrectParameterException e) {
+    public ErrorResponse handleIncorrectParameterException(final BadRequestException e) {
         log.warn(e.getMessage());
+
         return new ErrorResponse(e.getMessage(), "Invalid parameter - " + e.getParameter());
     }
 }

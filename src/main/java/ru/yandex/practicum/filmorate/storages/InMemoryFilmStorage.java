@@ -6,7 +6,9 @@ import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.models.Film;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -17,9 +19,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     private long idCounter = 1;
 
     @Override
-    public HashMap<Long, Film> getAll() {
+    public List<Film> getAll() {
         log.info("Текущее количество фильмов: {}", films.size());
-        return films;
+        return (ArrayList<Film>) films.values();
     }
 
     @Override
@@ -29,6 +31,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotExistException("Film with id" + id + "was not find.");
         } else {
             log.info("Найден фильм с id: {}", film.get().getId());
+
             return film.get();
         }
     }
@@ -45,6 +48,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.put(idCounter, film);
         idCounter++;
         log.info("Добавлен фильм  {} с датой {}", film.getName(), film.getReleaseDate());
+
         return film;
     }
 
@@ -60,7 +64,13 @@ public class InMemoryFilmStorage implements FilmStorage {
             existedFilm.get().setDuration(film.getDuration());
             log.info("Обновлен фильм {} с датой {}. Новое название {} и дата {}", film.getName(), film.getReleaseDate(),
                     existedFilm.get().getName(), existedFilm.get().getReleaseDate());
+
             return existedFilm.get();
         }
+    }
+
+    @Override
+    public boolean isContainValue(long id) {
+        return films.containsKey(id);
     }
 }
