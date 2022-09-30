@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class InMemoryFilmStorage implements FilmStorage {
+public class InMemoryFilmStorage implements Storage<Film> {
 
     private final HashMap<Long, Film> films = new HashMap<>();
     private long idCounter = 1;
@@ -21,7 +21,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> getAll() {
         log.info("Текущее количество фильмов: {}", films.size());
-        return (ArrayList<Film>) films.values();
+        return new ArrayList<>(films.values());
     }
 
     @Override

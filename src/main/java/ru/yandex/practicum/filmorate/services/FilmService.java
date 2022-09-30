@@ -8,21 +8,20 @@ import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.storages.FilmStorage;
+import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storages.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storages.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storages.UserStorage;
+import ru.yandex.practicum.filmorate.storages.Storage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class FilmService {
-    private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final Storage<Film> filmStorage;
+    private final Storage<User> userStorage;
     @Value("${filmorate.minDate}")
     private String minDate;
 
@@ -45,7 +44,7 @@ public class FilmService {
     }
 
     public List<Film> getAll() {
-        return new ArrayList<>(filmStorage.getAll());
+        return filmStorage.getAll();
     }
 
     public Film addFilm(Film film) {

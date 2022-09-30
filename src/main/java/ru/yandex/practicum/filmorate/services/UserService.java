@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.models.User;
-import ru.yandex.practicum.filmorate.storages.UserStorage;
+import ru.yandex.practicum.filmorate.storages.Storage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    private UserStorage userStorage;
+    private Storage<User> userStorage;
 
     public List<User> getAll() {
-        return new ArrayList<>(userStorage.getAll());
+        return userStorage.getAll();
     }
 
     public User getUserById(long id) {

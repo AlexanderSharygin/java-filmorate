@@ -13,14 +13,14 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class InMemoryUserStorage implements UserStorage {
+public class InMemoryUserStorage implements Storage<User> {
     private final HashMap<Long, User> users = new HashMap<>();
     private long idCounter = 1;
 
     @Override
     public List<User> getAll() {
         log.info("Текущее количество пользователей: {}", users.size());
-        return (ArrayList<User>) users.values();
+        return new ArrayList<>(users.values());
     }
 
     @Override
