@@ -57,20 +57,20 @@ public class InMemoryFilmStorage implements Storage<Film> {
         Optional<Film> existedFilm = Optional.ofNullable(films.get(film.getId()));
         if (existedFilm.isEmpty()) {
             throw new NotExistException("Film with id" + film.getId() + "was not found.");
-        } else {
-            existedFilm.get().setReleaseDate(film.getReleaseDate());
-            existedFilm.get().setDescription(film.getDescription());
-            existedFilm.get().setName(film.getName());
-            existedFilm.get().setDuration(film.getDuration());
-            log.info("Обновлен фильм {} с датой {}. Новое название {} и дата {}", film.getName(), film.getReleaseDate(),
-                    existedFilm.get().getName(), existedFilm.get().getReleaseDate());
-
-            return existedFilm.get();
         }
+        existedFilm.get().setReleaseDate(film.getReleaseDate());
+        existedFilm.get().setDescription(film.getDescription());
+        existedFilm.get().setName(film.getName());
+        existedFilm.get().setDuration(film.getDuration());
+        log.info("Обновлен фильм {} с датой {}. Новое название {} и дата {}", film.getName(), film.getReleaseDate(),
+                existedFilm.get().getName(), existedFilm.get().getReleaseDate());
+
+        return existedFilm.get();
+        
     }
 
     @Override
-    public boolean isContainValue(long id) {
+    public boolean isExist(long id) {
         return films.containsKey(id);
     }
 }

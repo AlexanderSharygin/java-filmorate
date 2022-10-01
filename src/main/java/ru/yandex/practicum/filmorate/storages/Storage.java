@@ -12,5 +12,5 @@ public interface Storage<T> {
 
     T update(T value);
 
-    boolean isContainValue(long id);
+    boolean isExist(long id);
 }

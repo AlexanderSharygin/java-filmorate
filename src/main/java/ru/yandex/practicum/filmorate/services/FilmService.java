@@ -98,10 +98,10 @@ public class FilmService {
     }
 
     private boolean isInputDataValid(long filmId, long userId) {
-        if (!filmStorage.isContainValue(filmId)) {
+        if (!filmStorage.isExist(filmId)) {
             throw new NotExistException("Film with specified id " + filmId + " is not exist");
         }
-        if (!userStorage.isContainValue(userId)) {
+        if (!userStorage.isExist(userId)) {
             throw new NotExistException("User with specified id " + userId + " is not exist");
         }
 

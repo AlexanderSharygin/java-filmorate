@@ -29,10 +29,10 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(long id, long friendId) {
-        if (!userStorage.isContainValue(id)) {
+        if (!userStorage.isExist(id)) {
             throw new NotExistException("User with specified id " + id + "is not exist");
         }
-        if (!userStorage.isContainValue(friendId)) {
+        if (!userStorage.isExist(friendId)) {
             throw new NotExistException("User with specified id " + friendId + "is not exist");
         }
         Set<Long> firstUserFriends = userStorage.getById(id).getFriends();
@@ -101,10 +101,10 @@ public class UserService {
     }
 
     private boolean isInputDataValid(long userId, long friendId) {
-        if (!userStorage.isContainValue(userId)) {
+        if (!userStorage.isExist(userId)) {
             throw new NotExistException("User with specified id " + userId + "is not exist");
         }
-        if (!userStorage.isContainValue(friendId)) {
+        if (!userStorage.isExist(friendId)) {
             throw new NotExistException("User with specified id " + friendId + "is not exist");
         }
 

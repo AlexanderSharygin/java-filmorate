@@ -37,10 +37,12 @@ public class InMemoryUserStorage implements Storage<User> {
 
     @Override
     public User add(User user) {
-        if (users.values().stream()
-                .anyMatch(k -> k.getEmail().equals(user.getEmail()))) {
-            throw new AlreadyExistException("User account with email " + user.getEmail() + " is already exist.");
-        }
+        users.values().stream()
+                .filter(u -> u.getEmail().equals(user.getEmail()))
+                .findFirst()
+                .ifPresent(user1 -> {
+                    throw new AlreadyExistException("User account with email " + user.getEmail() + " is already exist.");
+                });
         user.setId(idCounter);
         users.put(idCounter, user);
         idCounter++;
@@ -56,19 +58,18 @@ public class InMemoryUserStorage implements Storage<User> {
                 .findFirst();
         if (existedUser.isEmpty()) {
             throw new NotExistException("User with specified id " + user.getId() + " is not find.");
-        } else {
-            existedUser.get().setEmail(user.getEmail());
-            existedUser.get().setLogin(user.getLogin());
-            existedUser.get().setName(user.getName());
-            existedUser.get().setBirthday(user.getBirthday());
-            log.info("Обновлен пользователь с email {}", user.getEmail());
-
-            return existedUser.get();
         }
+        existedUser.get().setEmail(user.getEmail());
+        existedUser.get().setLogin(user.getLogin());
+        existedUser.get().setName(user.getName());
+        existedUser.get().setBirthday(user.getBirthday());
+        log.info("Обновлен пользователь с email {}", user.getEmail());
+
+        return existedUser.get();
     }
 
     @Override
-    public boolean isContainValue(long id) {
+    public boolean isExist(long id) {
         return users.containsKey(id);
     }
 }
