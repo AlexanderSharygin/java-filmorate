@@ -1,2 +1,5 @@
 server:
   port: 8080
+
+filmorate:
+  minDate: "1895-12-28"
