@@ -6,17 +6,17 @@ Template repository for Filmorate project.
 
 Основные запросы:
 1. Получить всех польщователей
-  
-SELECT *   
+
+SELECT * 
 FROM users
-  
+
 2. Получить всех  друзей для пользователя c {id}
-  
-SELECT * FROM users  
-WHERE id in(  
-SELECT  friend_id  
-FROM users_friends where user_id = {id})  
-  
+
+SELECT * FROM users
+WHERE id in(
+SELECT  friend_id 
+FROM users_friends where user_id = {id})
+
 3. Получить общих друзей для пользователей c {id1}, {id2}
 
 SELECT * FROM users
