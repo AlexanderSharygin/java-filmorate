@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.services;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.UserDao;
 import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.models.User;
@@ -10,6 +11,7 @@ import ru.yandex.practicum.filmorate.storages.Storage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,17 +20,22 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    private Storage<User> userStorage;
+    private UserDao userDao;
 
-    public List<User> getAll() {
+   /* public List<User> getAll() {
         return userStorage.getAll();
+    }*/
+
+    public Optional<User> findUserById(Long id) {
+        return userDao.findUserById(id);
     }
 
-    public User getUserById(long id) {
-        return userStorage.getById(id);
+    public Optional<User> addUser(User user) {
+        checkName(user);
+        return userDao.add(user);
     }
 
-    public List<User> getCommonFriends(long id, long friendId) {
+   /* public List<User> getCommonFriends(long id, long friendId) {
         if (!userStorage.isExist(id)) {
             throw new NotExistException("User with specified id " + id + "is not exist");
         }
@@ -98,9 +105,9 @@ public class UserService {
         }
 
         return false;
-    }
+    }*/
 
-    private boolean isInputDataValid(long userId, long friendId) {
+  /*  private boolean isInputDataValid(long userId, long friendId) {
         if (!userStorage.isExist(userId)) {
             throw new NotExistException("User with specified id " + userId + "is not exist");
         }
@@ -109,7 +116,7 @@ public class UserService {
         }
 
         return true;
-    }
+    }*/
 
     private void checkName(User user) {
         if (user.getName() == null || user.getName().isBlank()) {

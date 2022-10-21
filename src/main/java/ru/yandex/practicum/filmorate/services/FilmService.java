@@ -34,7 +34,7 @@ public class FilmService {
 
     public List<Film> getMostPopularFilms(int count) {
         return filmStorage.getAll().stream()
-                .sorted((f1, f2) -> f2.getLikeUsers().size() - f1.getLikeUsers().size())
+                .sorted((f1, f2) -> f2.getLikedUsers().size() - f1.getLikedUsers().size())
                 .limit(count)
                 .collect(Collectors.toList());
     }
@@ -56,8 +56,8 @@ public class FilmService {
     public boolean addLike(long filmId, long userId) {
         if (isInputDataValid(filmId, userId)) {
             Film film = filmStorage.getById(filmId);
-            if (!film.getLikeUsers().contains(userId)) {
-                film.getLikeUsers().add(userId);
+            if (!film.getLikedUsers().contains(userId)) {
+                film.getLikedUsers().add(userId);
                 log.info("Пользователь с id {} лайкнул фильм с id {}", userId, filmId);
 
                 return true;
@@ -78,8 +78,8 @@ public class FilmService {
     public boolean removeLike(long filmId, long userId) {
         if (isInputDataValid(filmId, userId)) {
             Film film = filmStorage.getById(filmId);
-            if (film.getLikeUsers().contains(userId)) {
-                film.getLikeUsers().remove(userId);
+            if (film.getLikedUsers().contains(userId)) {
+                film.getLikedUsers().remove(userId);
                 log.info("Пользователь с id {} удалил лайк у фильма с id {}", userId, filmId);
 
                 return true;

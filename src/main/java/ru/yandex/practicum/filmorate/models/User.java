@@ -10,12 +10,12 @@ import ru.yandex.practicum.filmorate.utils.LocalDateSerializer;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 public class User {
+    @NonNull
     private Long id;
+
     private String name;
 
     @NonNull
@@ -32,10 +32,9 @@ public class User {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate birthday;
 
-    private Set<Long> friends;
+
 
     public User() {
-        this.friends = new HashSet<>();
     }
 
 
@@ -43,10 +42,8 @@ public class User {
         this.login = login;
         this.email = email;
         this.birthday = birthday;
-        this.friends = new HashSet<>();
+
     }
 
-    public Set<Long> getFriends() {
-        return friends;
-    }
+
 }
