@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import org.hibernate.validator.constraints.Length;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,32 +38,16 @@ public class Film {
     private LocalDate releaseDate;
 
     @Min(1)
-    private long duration;
+    private Integer duration;
 
-
-    private Set<Long> likedUsers;
 
     @NonNull
-    private String rate;
+    private List<Genre> genres;
 
-    @NonNull
-    private List<String> genres;
-
-
+    MPA mpa;
 
     public Film() {
-        this.likedUsers = new HashSet<>();
-    }
-
-    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration) {
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-        this.likedUsers = new HashSet<>();
-    }
-
-    public Set<Long> getLikedUsers() {
-        return likedUsers;
+        this.genres = new ArrayList<>();
+        mpa = new MPA();
     }
 }

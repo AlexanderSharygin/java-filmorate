@@ -2,8 +2,10 @@ package ru.yandex.practicum.filmorate.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.utils.LocalDateDeserializer;
 import ru.yandex.practicum.filmorate.utils.LocalDateSerializer;
 
@@ -12,7 +14,9 @@ import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
 public class User {
+
     @NonNull
     private Long id;
 
@@ -32,18 +36,6 @@ public class User {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate birthday;
 
-
-
     public User() {
     }
-
-
-    public User(@NonNull String login, @NonNull String email, @NonNull LocalDate birthday) {
-        this.login = login;
-        this.email = email;
-        this.birthday = birthday;
-
-    }
-
-
 }

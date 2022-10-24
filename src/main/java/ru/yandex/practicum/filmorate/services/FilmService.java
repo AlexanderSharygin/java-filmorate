@@ -32,13 +32,13 @@ public class FilmService {
         this.userStorage = userStorage;
     }
 
-    public List<Film> getMostPopularFilms(int count) {
+   /* public List<Film> getMostPopularFilms(int count) {
         return filmStorage.getAll().stream()
                 .sorted((f1, f2) -> f2.getLikedUsers().size() - f1.getLikedUsers().size())
                 .limit(count)
                 .collect(Collectors.toList());
     }
-
+*/
     public Film getById(long id) {
         return filmStorage.getById(id);
     }
@@ -53,7 +53,7 @@ public class FilmService {
         return filmStorage.add(film);
     }
 
-    public boolean addLike(long filmId, long userId) {
+   /* public boolean addLike(long filmId, long userId) {
         if (isInputDataValid(filmId, userId)) {
             Film film = filmStorage.getById(filmId);
             if (!film.getLikedUsers().contains(userId)) {
@@ -67,7 +67,7 @@ public class FilmService {
         }
 
         return false;
-    }
+    }*/
 
     public Film updateFilm(Film film) {
         validate(film);
@@ -75,7 +75,7 @@ public class FilmService {
         return filmStorage.update(film);
     }
 
-    public boolean removeLike(long filmId, long userId) {
+  /*  public boolean removeLike(long filmId, long userId) {
         if (isInputDataValid(filmId, userId)) {
             Film film = filmStorage.getById(filmId);
             if (film.getLikedUsers().contains(userId)) {
@@ -90,7 +90,7 @@ public class FilmService {
 
         return false;
     }
-
+*/
     private void validate(Film film) {
         if (film.getReleaseDate().isBefore(LocalDate.parse(minDate))) {
             throw new ValidationException("Release date can be less than 28/12/1895");
