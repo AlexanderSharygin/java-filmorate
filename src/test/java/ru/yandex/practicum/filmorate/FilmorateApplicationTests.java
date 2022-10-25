@@ -230,8 +230,7 @@ class FilmorateApplicationTests {
                 ).hasValueSatisfying(f ->
                         assertThat(f).hasFieldOrPropertyWithValue("Name", "Update"));
     }
-
-
+    
     @Test
     @Order(14)
     @AutoConfigureTestDatabase
