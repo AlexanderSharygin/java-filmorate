@@ -30,7 +30,6 @@ public class UserService {
 
     public List<User> getFriendsForUser(long userId) {
         return userDao.getFriendsForUser(userId);
-
     }
 
     public List<User> getCommonFriends(long id, long friendId) {

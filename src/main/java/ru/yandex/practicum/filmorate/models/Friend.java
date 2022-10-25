@@ -7,6 +7,7 @@ import lombok.NonNull;
 @Data
 @AllArgsConstructor
 public class Friend {
+
     @NonNull
     Long userId;
 

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.yandex.practicum.filmorate.utils.LocalDateDeserializer;
 import ru.yandex.practicum.filmorate.utils.LocalDateSerializer;
 

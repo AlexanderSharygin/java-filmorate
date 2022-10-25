@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao_impls;
+package ru.yandex.practicum.filmorate.DAOs.impl;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
@@ -44,6 +44,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Optional<User> getUserById(Long user_id) {
         try {
+
             return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_USER, (rs, rowNum) -> makeUser(rs), user_id));
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("User with id " + user_id + " not exists in the DB");
@@ -54,6 +55,7 @@ public class UserDaoImpl implements UserDao {
     public Optional<User> addUser(User user) {
         try {
             jdbcTemplate.update(SQL_ADD_USER, user.getName(), user.getEmail(), user.getBirthday(), user.getLogin());
+
             return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_NEWEST_USER, (rs, rowNum) -> makeUser(rs)));
 
         } catch (DuplicateKeyException e) {
@@ -65,6 +67,7 @@ public class UserDaoImpl implements UserDao {
     public Optional<User> updateUser(User user) {
         try {
             jdbcTemplate.update(SQL_UPDATE_USER, user.getName(), user.getEmail(), user.getBirthday(), user.getLogin(), user.getId());
+
             return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_USER, (rs, rowNum) -> makeUser(rs), user.getId()));
 
         } catch (EmptyResultDataAccessException e) {
@@ -75,6 +78,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public List<User> getUsers() {
         try {
+
             return jdbcTemplate.query(SQL_GET_ALL_USERS, (rs, rowNum) -> makeUser(rs));
         } catch (RuntimeException e) {
             throw new BadRequestException("Something went wrong.");
@@ -98,7 +102,6 @@ public class UserDaoImpl implements UserDao {
     public void confirmFriend(Long userId, Long friendId) {
         try {
             jdbcTemplate.queryForObject(SQL_GET_FRIEND, (rs, rowNum) -> makeFriend(rs), userId, friendId);
-            ;
             jdbcTemplate.update(SQL_CONFIRM_FRIEND, userId, friendId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("User with id " + friendId + "is not a friend for " + userId);
@@ -118,6 +121,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public List<User> getFriendsForUser(Long userId) {
         try {
+
             return jdbcTemplate.query(SQL_GET_FRIENDS_FOR_USER, (rs, rowNum) -> makeUser(rs), userId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("Were are not friends for user with id " + userId);
@@ -127,6 +131,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public List<User> getCommonFriends(Long firstUserId, Long secondUserId) {
         try {
+
             return jdbcTemplate.query(SQL_GET_COMMON_FRIENDS, (rs, rowNum) -> makeUser(rs), firstUserId, secondUserId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("Were are not common friends for user with id " + firstUserId + " and " + secondUserId);

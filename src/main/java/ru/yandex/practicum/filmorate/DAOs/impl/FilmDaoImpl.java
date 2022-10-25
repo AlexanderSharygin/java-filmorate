@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao_impls;
+package ru.yandex.practicum.filmorate.DAOs.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,12 +8,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.DAOs.FilmDao;
-import ru.yandex.practicum.filmorate.dao_impls.UserDaoImpl;
 import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.BadRequestException;
 import ru.yandex.practicum.filmorate.exceptions.NotExistException;
-
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Genre;
 import ru.yandex.practicum.filmorate.models.Like;
@@ -22,7 +19,10 @@ import ru.yandex.practicum.filmorate.models.MPA;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class FilmDaoImpl implements FilmDao {
@@ -77,6 +77,7 @@ public class FilmDaoImpl implements FilmDao {
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("Film with id " + film_id + " not exists in the DB");
         }
+
         return Optional.of(getFilmWithGenres(film));
     }
 
@@ -89,16 +90,17 @@ public class FilmDaoImpl implements FilmDao {
             throw new BadRequestException("Something went wrong.");
         }
         fillGenresForFilms(films);
+
         return films;
     }
 
     @Override
     public Optional<Film> addFilm(Film film) {
-        validateFilm(film);
         try {
             jdbcTemplate.update(SQL_INSERT_FILM, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
             Film createdFilm = jdbcTemplate.queryForObject(SQL_GET_NEWEST_FILM, (rs, rowNum) -> makeFilm(rs));
             copyGenresToCreatedFilm(film, createdFilm);
+
             return Optional.of(getFilmWithGenres(createdFilm));
         } catch (DuplicateKeyException e) {
             throw new AlreadyExistException("Film already exists in the DB");
@@ -109,12 +111,12 @@ public class FilmDaoImpl implements FilmDao {
 
     @Override
     public Optional<Film> updateFilm(Film film) {
-        validateFilm(film);
         try {
             jdbcTemplate.update(SQL_UPDATE_FILM, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
             Film createdFilm = jdbcTemplate.queryForObject(SQL_GET_FILM, (rs, rowNum) -> makeFilm(rs), film.getId());
             jdbcTemplate.update(SQL_DELETE_GENRES_FOR_FILM, film.getId());
             copyGenresToCreatedFilm(film, createdFilm);
+
             return Optional.of(getFilmWithGenres(createdFilm));
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("Film with id " + film.getId() + " not exists in the DB");
@@ -124,6 +126,7 @@ public class FilmDaoImpl implements FilmDao {
     @Override
     public Optional<Genre> getGenreById(Long id) {
         try {
+
             return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_GENRE, (rs, rowNum) -> makeGenre(rs), id));
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("Genre with id " + id + " not exists in the DB");
@@ -133,6 +136,7 @@ public class FilmDaoImpl implements FilmDao {
     @Override
     public List<Genre> getGenres() {
         try {
+
             return jdbcTemplate.query(SQL_GET_GENRES, (rs, rowNum) -> makeGenre(rs));
         } catch (RuntimeException e) {
             throw new BadRequestException("Something went wrong.");
@@ -152,6 +156,7 @@ public class FilmDaoImpl implements FilmDao {
     @Override
     public List<MPA> getMPAs() {
         try {
+
             return jdbcTemplate.query(SQL_GET_MPAs, (rs, rowNum) -> makeMPA(rs));
         } catch (RuntimeException e) {
             throw new BadRequestException("Something went wrong.");
@@ -159,11 +164,12 @@ public class FilmDaoImpl implements FilmDao {
     }
 
     @Override
-    public boolean setLike(Long filmId, Long userId) {
+    public boolean addLIke(Long filmId, Long userId) {
         try {
             jdbcTemplate.queryForObject(SQL_GET_FILM, (rs, rowNum) -> makeFilm(rs), filmId);
             jdbcTemplate.queryForObject(SQL_GET_USER, (rs, rowNum) -> userDao.makeUser(rs), userId);
             jdbcTemplate.update(SQL_INSERT_LIKE, userId, filmId);
+
             return true;
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("User or film not exists in the DB");
@@ -177,6 +183,7 @@ public class FilmDaoImpl implements FilmDao {
         try {
             jdbcTemplate.queryForObject(SQL_GET_LIKE, (rs, rowNum) -> makeLike(rs), userId, filmId);
             jdbcTemplate.update(SQL_DELETE_LIKE, userId, filmId);
+
             return true;
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("User with id " + userId + " is not like film with id " + filmId);
@@ -192,6 +199,7 @@ public class FilmDaoImpl implements FilmDao {
             throw new BadRequestException("Something went wrong.");
         }
         fillGenresForFilms(films);
+
         return films;
     }
 
@@ -209,8 +217,10 @@ public class FilmDaoImpl implements FilmDao {
         try {
             List<Genre> genres = jdbcTemplate.query(SQL_GET_GENRES_FOR_FILM, (rs, rowNum) -> makeGenre(rs), film.getId());
             film.setGenres(genres);
+
             return film;
         } catch (EmptyResultDataAccessException e) {
+
             return film;
         }
     }
@@ -242,6 +252,7 @@ public class FilmDaoImpl implements FilmDao {
         film.setReleaseDate(releaseDate);
         film.setDuration(duration);
         film.setMpa(new MPA(mpaId, mpaName));
+
         return film;
     }
 
@@ -255,14 +266,5 @@ public class FilmDaoImpl implements FilmDao {
 
     private Like makeLike(ResultSet rs) throws SQLException {
         return new Like(rs.getLong("user_id"), rs.getLong("film_id"));
-    }
-
-    private void validateFilm(Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.parse(minDate))) {
-            throw new ValidationException("Release date can be less than 28/12/1895");
-        }
-        if (film.getMpa() == null) {
-            throw new ValidationException("MPA rate should be specified for the film");
-        }
     }
 }

@@ -7,6 +7,7 @@ import lombok.NonNull;
 @Data
 @AllArgsConstructor
 public class Genre {
+
     @NonNull
     Long id;
 
