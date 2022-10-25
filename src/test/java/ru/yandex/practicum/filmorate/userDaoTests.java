@@ -40,8 +40,7 @@ class userDaoTests {
         assertThat(userOptional)
                 .isPresent()
                 .hasValueSatisfying(user ->
-                        assertThat(user).hasFieldOrPropertyWithValue("id", 1L)
-                );
+                        assertThat(user).hasFieldOrPropertyWithValue("id", 1L));
     }
 
     @Test
@@ -73,8 +72,7 @@ class userDaoTests {
         assertThat(userOptional)
                 .isPresent()
                 .hasValueSatisfying(user ->
-                        assertThat(user).hasFieldOrPropertyWithValue("id", 3L)
-                );
+                        assertThat(user).hasFieldOrPropertyWithValue("id", 3L));
     }
 
     @Test
