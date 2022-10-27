@@ -3,32 +3,50 @@ package ru.yandex.practicum.filmorate.services;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.DAOs.FriendDao;
 import ru.yandex.practicum.filmorate.DAOs.UserDao;
+import ru.yandex.practicum.filmorate.models.Friend;
 import ru.yandex.practicum.filmorate.models.User;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
 public class UserService {
 
     private final UserDao userDao;
+    private final FriendDao friendDao;
 
     @Autowired
-    public UserService(UserDao userDao) {
+    public UserService(UserDao userDao, FriendDao friendDao) {
         this.userDao = userDao;
+        this.friendDao = friendDao;
     }
 
     public List<User> getUsers() {
         return userDao.getUsers();
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userDao.getUserById(id);
+    public User getUserById(Long id) {
+        return userDao.findUserById(id).orElse(null);
     }
 
+    public User addUser(User user) {
+        checkName(user);
+        userDao.addUser(user);
+        return userDao.findNewUser().orElse(null);
+
+    }
+
+    public User updateUser(User user) {
+        checkName(user);
+        userDao.updateUser(user);
+        return userDao.findUserById(user.getId()).get();
+    }
+
+
     public List<User> getFriendsForUser(long userId) {
+
         return userDao.getFriendsForUser(userId);
     }
 
@@ -37,28 +55,23 @@ public class UserService {
     }
 
 
-    public Optional<User> addUser(User user) {
-        checkName(user);
-        return userDao.addUser(user);
-    }
-
     public boolean addFriend(long userId, long friendId) {
-        userDao.addFriend(userId, friendId);
+        User user = userDao.findUserById(userId).get();
+        User friend = userDao.findUserById(friendId).get();
+        friendDao.addFriend(user.getId(), friend.getId());
         return true;
     }
 
     public boolean confirmFriends(long userId, long friendId) {
-        userDao.confirmFriend(userId, friendId);
+        Friend friend = friendDao.getFriend(userId, friendId).get();
+        friendDao.confirmFriend(friend.getUserId(), friend.getFriendId());
         return true;
     }
 
-    public Optional<User> updateUser(User user) {
-        checkName(user);
-        return userDao.updateUser(user);
-    }
 
     public boolean removeFriend(long userId, long friendId) {
-        userDao.removeFriend(userId, friendId);
+        Friend friend = friendDao.getFriend(userId, friendId).get();
+        friendDao.removeFriend(friend.getUserId(), friend.getFriendId());;
         return true;
     }
 

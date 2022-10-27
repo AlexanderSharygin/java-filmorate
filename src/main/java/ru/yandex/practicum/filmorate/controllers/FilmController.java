@@ -23,7 +23,7 @@ public class FilmController {
     }
 
     @GetMapping("/films/{id}")
-    public Optional<Film> getFilmById(@PathVariable("id") long filmId) {
+    public Film getFilmById(@PathVariable("id") long filmId) {
         return filmService.getFilmById(filmId);
     }
 
@@ -33,17 +33,17 @@ public class FilmController {
     }
 
     @PostMapping(value = "/films")
-    public Optional<Film> addFilm(@Valid @RequestBody Film film) {
+    public Film addFilm(@Valid @RequestBody Film film) {
         return filmService.addFilm(film);
     }
 
     @PutMapping(value = "/films")
-    public Optional<Film> updateFilm(@Valid @RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         return filmService.updateFilm(film);
     }
 
     @GetMapping("/genres/{id}")
-    public Optional<Genre> getGenreById(@PathVariable("id") long genreId) {
+    public Genre getGenreById(@PathVariable("id") long genreId) {
         return filmService.getGenreById(genreId);
     }
 
@@ -53,7 +53,7 @@ public class FilmController {
     }
 
     @GetMapping("/mpa/{id}")
-    public Optional<MPA> getMPAById(@PathVariable("id") long mpaId) {
+    public MPA getMPAById(@PathVariable("id") long mpaId) {
         return filmService.getMPAById(mpaId);
     }
 

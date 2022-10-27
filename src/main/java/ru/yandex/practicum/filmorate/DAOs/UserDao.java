@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserDao {
-    Optional<User> getUserById(Long id);
+    Optional<User> findUserById(Long id);
 
     List<User> getUsers();
 
@@ -14,13 +14,9 @@ public interface UserDao {
 
     List<User> getCommonFriends(Long firstUserId, Long secondUserId);
 
-    Optional<User> addUser(User user);
+    void addUser(User user);
 
-    Optional<User> updateUser(User user);
+    void updateUser(User user);
 
-    void addFriend(Long userId, Long friendId);
-
-    void confirmFriend(Long userId, Long friendId);
-
-    void removeFriend(Long userId, Long friendId);
+    Optional<User> findNewUser();
 }

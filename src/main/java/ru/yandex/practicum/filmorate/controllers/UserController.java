@@ -24,17 +24,17 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public Optional<User> getUserById(@PathVariable("id") Long usersId) {
+    public User getUserById(@PathVariable("id") Long usersId) {
         return userService.getUserById(usersId);
     }
 
     @PostMapping(value = "/users")
-    public Optional<User> create(@Valid @RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
         return userService.addUser(user);
     }
 
     @PutMapping(value = "/users")
-    public Optional<User> update(@Valid @RequestBody User user) {
+    public User update(@Valid @RequestBody User user) {
         return userService.updateUser(user);
     }
 
