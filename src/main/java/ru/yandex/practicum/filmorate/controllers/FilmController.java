@@ -4,22 +4,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.BadRequestException;
 import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.models.Genre;
-import ru.yandex.practicum.filmorate.models.MPA;
 import ru.yandex.practicum.filmorate.services.FilmService;
+import ru.yandex.practicum.filmorate.services.LikeService;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 
 public class FilmController {
     private final FilmService filmService;
 
+    private final LikeService likeService;
+
     @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, LikeService likeService) {
         this.filmService = filmService;
+        this.likeService = likeService;
     }
 
     @GetMapping("/films/{id}")
@@ -42,34 +43,14 @@ public class FilmController {
         return filmService.updateFilm(film);
     }
 
-    @GetMapping("/genres/{id}")
-    public Genre getGenreById(@PathVariable("id") long genreId) {
-        return filmService.getGenreById(genreId);
-    }
-
-    @GetMapping("/genres")
-    public List<Genre> getGenres() {
-        return filmService.getGenres();
-    }
-
-    @GetMapping("/mpa/{id}")
-    public MPA getMPAById(@PathVariable("id") long mpaId) {
-        return filmService.getMPAById(mpaId);
-    }
-
-    @GetMapping("/mpa")
-    public List<MPA> getMPAs() {
-        return filmService.getMPAs();
-    }
-
     @PutMapping("/films/{id}/like/{userId}")
     public boolean addLike(@PathVariable("id") Long filmId, @PathVariable("userId") long userId) {
-        return filmService.addLike(filmId, userId);
+        return likeService.addLike(filmId, userId);
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
     public boolean removeLike(@PathVariable("id") Long filmId, @PathVariable("userId") long userId) {
-        return filmService.removeLike(filmId, userId);
+        return likeService.removeLike(filmId, userId);
     }
 
     @GetMapping(value = "/films/popular")

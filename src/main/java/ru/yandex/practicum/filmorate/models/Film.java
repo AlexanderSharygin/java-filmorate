@@ -40,10 +40,10 @@ public class Film {
     @NonNull
     private List<Genre> genres;
 
-    MPA mpa;
+    Mpa mpa;
 
     public Film() {
         this.genres = new ArrayList<>();
-        mpa = new MPA();
+        mpa = new Mpa();
     }
 }

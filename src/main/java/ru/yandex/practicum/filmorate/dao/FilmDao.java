@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.DAOs;
+package ru.yandex.practicum.filmorate.dao;
 
 import ru.yandex.practicum.filmorate.models.Film;
 
@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmDao {
-    Optional<Film> getFilmById(Long id);
+    Optional<Film> findFilmById(Long id);
 
 
-    Optional<Film> getNewestFilm();
+    Optional<Film> findNewestFilm();
 
-    List<Film> getFilms();
+    List<Film> findFilms();
 
-    List<Film> getPopularFilms(Integer count);
+    List<Film> findPopularFilms(Integer count);
 
     void addFilm(Film film);
 

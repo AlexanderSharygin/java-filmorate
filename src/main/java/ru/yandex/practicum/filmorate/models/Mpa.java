@@ -6,7 +6,7 @@ import lombok.NonNull;
 
 @Data
 @AllArgsConstructor
-public class MPA {
+public class Mpa {
 
     @NonNull
     Long id;
@@ -14,7 +14,6 @@ public class MPA {
     @NonNull
     String name;
 
-    public MPA() {
+    public Mpa() {
     }
-
 }

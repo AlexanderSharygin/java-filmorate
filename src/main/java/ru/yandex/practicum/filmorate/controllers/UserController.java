@@ -3,19 +3,21 @@ package ru.yandex.practicum.filmorate.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.services.FriendService;
 import ru.yandex.practicum.filmorate.services.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class UserController {
     private final UserService userService;
+    private final FriendService friendService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FriendService friendService) {
         this.userService = userService;
+        this.friendService = friendService;
     }
 
     @GetMapping("/users")
@@ -40,26 +42,26 @@ public class UserController {
 
     @PutMapping(value = "/users/{id}/friends/{friendId}")
     public boolean addFriend(@PathVariable("id") long userId, @PathVariable long friendId) {
-        return userService.addFriend(userId, friendId);
+        return friendService.addFriend(userId, friendId);
     }
 
     @PutMapping(value = "/users/{id}/friends/{friendId}/confirm")
     public boolean confirmFriend(@PathVariable("id") long userId, @PathVariable long friendId) {
-        return userService.confirmFriends(userId, friendId);
+        return friendService.confirmFriends(userId, friendId);
     }
 
     @DeleteMapping(value = "/users/{id}/friends/{friendId}")
     public boolean removeFriend(@PathVariable("id") long userId, @PathVariable long friendId) {
-        return userService.removeFriend(userId, friendId);
+        return friendService.removeFriend(userId, friendId);
     }
 
     @GetMapping(value = "/users/{id}/friends")
     public List<User> getUserFriends(@PathVariable long id) {
-        return userService.getFriendsForUser(id);
+        return friendService.getFriendsForUser(id);
     }
 
     @GetMapping("/users/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable("id") long id, @PathVariable("otherId") long friendId) {
-        return userService.getCommonFriends(id, friendId);
+        return friendService.getCommonFriends(id, friendId);
     }
 }

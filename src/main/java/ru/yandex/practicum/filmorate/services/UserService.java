@@ -2,10 +2,13 @@ package ru.yandex.practicum.filmorate.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.DAOs.FriendDao;
-import ru.yandex.practicum.filmorate.DAOs.UserDao;
-import ru.yandex.practicum.filmorate.models.Friend;
+import ru.yandex.practicum.filmorate.dao.UserDao;
+import ru.yandex.practicum.filmorate.exceptions.AlreadyExistException;
+import ru.yandex.practicum.filmorate.exceptions.BadRequestException;
+import ru.yandex.practicum.filmorate.exceptions.NotExistException;
 import ru.yandex.practicum.filmorate.models.User;
 
 import java.util.List;
@@ -15,64 +18,52 @@ import java.util.List;
 public class UserService {
 
     private final UserDao userDao;
-    private final FriendDao friendDao;
 
     @Autowired
-    public UserService(UserDao userDao, FriendDao friendDao) {
+    public UserService(UserDao userDao) {
         this.userDao = userDao;
-        this.friendDao = friendDao;
+
     }
 
     public List<User> getUsers() {
-        return userDao.getUsers();
+        try {
+            return userDao.findUsers();
+        } catch (RuntimeException e) {
+            throw new BadRequestException("Something went wrong.");
+        }
     }
 
     public User getUserById(Long id) {
-        return userDao.findUserById(id).orElse(null);
+        try {
+            return userDao.findUserById(id).orElse(null);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotExistException("User with id " + id + " not exists in the DB");
+        }
+
     }
 
     public User addUser(User user) {
         checkName(user);
-        userDao.addUser(user);
-        return userDao.findNewUser().orElse(null);
-
+        try {
+            userDao.addUser(user);
+            return userDao.findNewUser().orElse(null);
+        } catch (DuplicateKeyException e) {
+            throw new AlreadyExistException("User already exists in the DB");
+        } catch (RuntimeException e) {
+            throw new BadRequestException("Something went wrong.");
+        }
     }
 
     public User updateUser(User user) {
         checkName(user);
-        userDao.updateUser(user);
-        return userDao.findUserById(user.getId()).get();
-    }
-
-
-    public List<User> getFriendsForUser(long userId) {
-
-        return userDao.getFriendsForUser(userId);
-    }
-
-    public List<User> getCommonFriends(long id, long friendId) {
-        return userDao.getCommonFriends(id, friendId);
-    }
-
-
-    public boolean addFriend(long userId, long friendId) {
-        User user = userDao.findUserById(userId).get();
-        User friend = userDao.findUserById(friendId).get();
-        friendDao.addFriend(user.getId(), friend.getId());
-        return true;
-    }
-
-    public boolean confirmFriends(long userId, long friendId) {
-        Friend friend = friendDao.getFriend(userId, friendId).get();
-        friendDao.confirmFriend(friend.getUserId(), friend.getFriendId());
-        return true;
-    }
-
-
-    public boolean removeFriend(long userId, long friendId) {
-        Friend friend = friendDao.getFriend(userId, friendId).get();
-        friendDao.removeFriend(friend.getUserId(), friend.getFriendId());;
-        return true;
+        try {
+            userDao.updateUser(user);
+            return userDao.findUserById(user.getId()).get();
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotExistException("User not exists in the DB");
+        } catch (RuntimeException e) {
+            throw new BadRequestException("Something went wrong.");
+        }
     }
 
     private void checkName(User user) {
