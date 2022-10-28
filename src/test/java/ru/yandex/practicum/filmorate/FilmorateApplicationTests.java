@@ -45,8 +45,8 @@ class FilmorateApplicationTests {
         testUser.setEmail("Test@test.com");
         testUser.setLogin("Test");
         testUser.setBirthday(LocalDate.parse("1980-01-01"));
-        userStorage.addUser(testUser);
-        Optional<User> userOptional = userStorage.findUserById(1L);
+        userStorage.add(testUser);
+        Optional<User> userOptional = userStorage.findById(1L);
         assertThat(userOptional)
                 .isPresent()
                 .hasValueSatisfying(user ->
@@ -62,8 +62,8 @@ class FilmorateApplicationTests {
         testUser2.setEmail("Test@test2.com");
         testUser2.setLogin("Test2");
         testUser2.setBirthday(LocalDate.parse("1980-01-01"));
-        userStorage.addUser(testUser2);
-        List<User> users = userStorage.findUsers();
+        userStorage.add(testUser2);
+        List<User> users = userStorage.findAll().get();
         assertThat(users.size()).isEqualTo(2);
         assertThat(users.get(0).getName()).isEqualTo("Test");
         assertThat(users.get(1).getName()).isEqualTo("Test2");
@@ -78,8 +78,8 @@ class FilmorateApplicationTests {
         testUser.setEmail("Test@test3.com");
         testUser.setLogin("Test3");
         testUser.setBirthday(LocalDate.parse("1980-01-01"));
-        userStorage.addUser(testUser);
-        Optional<User> user = userStorage.findUserById(3L);
+        userStorage.add(testUser);
+        Optional<User> user = userStorage.findById(3L);
         assertThat(user)
                 .isPresent()
                 .hasValueSatisfying(u ->
@@ -96,8 +96,8 @@ class FilmorateApplicationTests {
         testUser.setEmail("Test@test.com");
         testUser.setLogin("Test");
         testUser.setBirthday(LocalDate.parse("1980-01-01"));
-        userStorage.updateUser(testUser);
-        Optional<User> userOptional = userStorage.findUserById(1L);
+        userStorage.update(testUser);
+        Optional<User> userOptional = userStorage.findById(1L);
         assertThat(userOptional)
                 .isPresent()
                 .hasValueSatisfying(user ->
@@ -110,30 +110,30 @@ class FilmorateApplicationTests {
     @Order(5)
     @AutoConfigureTestDatabase
     public void testAddFriend() {
-        assertDoesNotThrow(() -> friendsStorage.addFriend(1L, 2L));
+        assertDoesNotThrow(() -> friendsStorage.add(1L, 2L));
     }
 
     @Test
     @Order(6)
     @AutoConfigureTestDatabase
     public void testConfirmFriend() {
-        assertDoesNotThrow(() -> friendsStorage.confirmFriend(1L, 2L));
+        assertDoesNotThrow(() -> friendsStorage.confirm(1L, 2L));
     }
 
     @Test
     @Order(7)
     @AutoConfigureTestDatabase
     public void testRemoveFriend() {
-        assertDoesNotThrow(() -> friendsStorage.removeFriend(1L, 2L));
+        assertDoesNotThrow(() -> friendsStorage.remove(1L, 2L));
     }
 
     @Test
     @Order(8)
     @AutoConfigureTestDatabase
     public void testGetFriendsForUser() {
-        friendsStorage.addFriend(1L, 2L);
-        friendsStorage.addFriend(1L, 3L);
-        List<User> users = userStorage.findFriendsForUser(1L);
+        friendsStorage.add(1L, 2L);
+        friendsStorage.add(1L, 3L);
+        List<User> users = userStorage.findFriends(1L).get();
         assertThat(users.size()).isEqualTo(2);
         assertThat(users.get(0).getName()).isEqualTo("Test2");
         assertThat(users.get(1).getName()).isEqualTo("Test3");
@@ -143,8 +143,8 @@ class FilmorateApplicationTests {
     @Order(9)
     @AutoConfigureTestDatabase
     public void testGetCommonFriendsForUsers() {
-        friendsStorage.addFriend(2L, 3L);
-        List<User> users = userStorage.findCommonFriends(1L, 2L);
+        friendsStorage.add(2L, 3L);
+        List<User> users = userStorage.findCommonFriends(1L, 2L).get();
         assertThat(users.size()).isEqualTo(1);
         assertThat(users.get(0).getName()).isEqualTo("Test3");
     }
@@ -163,8 +163,8 @@ class FilmorateApplicationTests {
         Genre genre2 = new Genre(2L, "Драма");
         film.setMpa(mpa);
         film.setGenres(List.of(genre, genre2));
-        filmStorage.addFilm(film);
-        Optional<Film> filmOptional = filmStorage.findFilmById(1L);
+        filmStorage.add(film);
+        Optional<Film> filmOptional = filmStorage.findById(1L);
         assertThat(filmOptional)
                 .isPresent()
                 .hasValueSatisfying(f ->
@@ -185,8 +185,8 @@ class FilmorateApplicationTests {
         Genre genre2 = new Genre(2L, "Драма");
         film.setMpa(mpa);
         film.setGenres(List.of(genre, genre2));
-        filmStorage.addFilm(film);
-        List<Film> films = filmStorage.findFilms();
+        filmStorage.add(film);
+        List<Film> films = filmStorage.findAll().get();
         assertThat(films.size()).isEqualTo(2);
         assertThat(films.get(0).getName()).isEqualTo("Test");
         assertThat(films.get(1).getName()).isEqualTo("Test2");
@@ -206,8 +206,8 @@ class FilmorateApplicationTests {
         Genre genre2 = new Genre(2L, "Драма");
         film.setMpa(mpa);
         film.setGenres(List.of(genre, genre2));
-        filmStorage.addFilm(film);
-        Optional<Film> filmOptional = filmStorage.findFilmById(3L);
+        filmStorage.add(film);
+        Optional<Film> filmOptional = filmStorage.findById(3L);
         assertThat(filmOptional)
                 .isPresent()
                 .hasValueSatisfying(f ->
@@ -229,8 +229,8 @@ class FilmorateApplicationTests {
         Genre genre2 = new Genre(2L, "Драма");
         film.setMpa(mpa);
         film.setGenres(List.of(genre, genre2));
-        filmStorage.updateFilm(film);
-        Optional<Film> filmOptional = filmStorage.findFilmById(1L);
+        filmStorage.update(film);
+        Optional<Film> filmOptional = filmStorage.findById(1L);
         assertThat(filmOptional)
                 .isPresent()
                 .hasValueSatisfying(f ->
@@ -241,7 +241,7 @@ class FilmorateApplicationTests {
     @Order(14)
     @AutoConfigureTestDatabase
     public void testGetGenreById() {
-        Optional<Genre> genre = genreDao.findGenreById(1L);
+        Optional<Genre> genre = genreDao.findById(1L);
         assertThat(genre)
                 .isPresent()
                 .hasValueSatisfying(g ->
@@ -254,7 +254,7 @@ class FilmorateApplicationTests {
     @Order(15)
     @AutoConfigureTestDatabase
     public void testGetGenres() {
-        List<Genre> genres = genreDao.findGenres();
+        List<Genre> genres = genreDao.findAll().get();
         assertThat(genres.size()).isEqualTo(6);
         assertThat(genres.get(0).getName()).isEqualTo("Комедия");
         assertThat(genres.get(1).getName()).isEqualTo("Драма");
@@ -264,7 +264,7 @@ class FilmorateApplicationTests {
     @Order(16)
     @AutoConfigureTestDatabase
     public void testMPAById() {
-        Optional<Mpa> mpa = mpaDao.findMpaById(1L);
+        Optional<Mpa> mpa = mpaDao.findById(1L);
         assertThat(mpa)
                 .isPresent()
                 .hasValueSatisfying(m ->
@@ -277,8 +277,8 @@ class FilmorateApplicationTests {
     @Order(17)
     @AutoConfigureTestDatabase
     public void testAddLike() {
-        likeStorage.addLIke(1L, 1L);
-        Optional<Like> like = likeStorage.findLIke(1L, 1L);
+        likeStorage.add(1L, 1L);
+        Optional<Like> like = likeStorage.find(1L, 1L);
         assertThat(like).isPresent();
     }
 
@@ -286,18 +286,18 @@ class FilmorateApplicationTests {
     @Order(18)
     @AutoConfigureTestDatabase
     public void testRemoveLike() {
-        likeStorage.removeLike(1L, 1L);
-        assertThrows(EmptyResultDataAccessException.class, () -> likeStorage.findLIke(1L, 1L));
+        likeStorage.remove(1L, 1L);
+        assertThrows(EmptyResultDataAccessException.class, () -> likeStorage.find(1L, 1L));
     }
 
     @Test
     @Order(19)
     @AutoConfigureTestDatabase
     public void testGetPopularFilms() {
-        likeStorage.addLIke(1L, 1L);
-        likeStorage.addLIke(2L, 1L);
-        likeStorage.addLIke(2L, 2L);
-        List<Film> films = filmStorage.findPopularFilms(2);
+        likeStorage.add(1L, 1L);
+        likeStorage.add(2L, 1L);
+        likeStorage.add(2L, 2L);
+        List<Film> films = filmStorage.findPopulars(2).get();
         assertThat(films.size()).isEqualTo(2);
         assertThat(films.get(0).getName()).isEqualTo("Test2");
         assertThat(films.get(1).getName()).isEqualTo("Update");

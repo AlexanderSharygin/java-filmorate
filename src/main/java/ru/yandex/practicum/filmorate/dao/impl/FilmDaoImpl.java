@@ -45,36 +45,36 @@ public class FilmDaoImpl implements FilmDao {
             " ON f.id = l.film_id ORDER BY likes_count DESC LIMIT ?";
 
     @Override
-    public Optional<Film> findFilmById(Long film_id) {
+    public Optional<Film> findById(Long film_id) {
         return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_FILM, (rs, rowNum) -> makeFilm(rs), film_id));
     }
 
     @Override
-    public Optional<Film> findNewestFilm() {
+    public Optional<Film> findNew() {
 
         return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_NEWEST_FILM, (rs, rowNum) -> makeFilm(rs)));
     }
 
     @Override
-    public List<Film> findFilms() {
-        return jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs));
+    public Optional<List<Film>> findAll() {
+        return Optional.of(jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs)));
     }
 
     @Override
-    public void addFilm(Film film) {
-        jdbcTemplate.update(SQL_INSERT_FILM, film.getName(), film.getDescription(), film.getReleaseDate(),
-                film.getDuration(), film.getMpa().getId());
+    public void add(Film value) {
+        jdbcTemplate.update(SQL_INSERT_FILM, value.getName(), value.getDescription(), value.getReleaseDate(),
+                value.getDuration(), value.getMpa().getId());
     }
 
     @Override
-    public void updateFilm(Film film) {
+    public void update(Film film) {
         jdbcTemplate.update(SQL_UPDATE_FILM, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId());
     }
 
     @Override
-    public List<Film> findPopularFilms(Integer count) {
-        return jdbcTemplate.query(SQL_GET_POPULAR_FILMS, (rs, rowNum) -> makeFilm(rs), count);
+    public Optional<List<Film>> findPopulars(Integer count) {
+        return Optional.of(jdbcTemplate.query(SQL_GET_POPULAR_FILMS, (rs, rowNum) -> makeFilm(rs), count));
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {

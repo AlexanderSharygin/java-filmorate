@@ -5,10 +5,10 @@ import ru.yandex.practicum.filmorate.models.Like;
 import java.util.Optional;
 
 public interface LikeDao {
-    Optional<Like> findLIke(Long filmId, Long userId);
+    Optional<Like> find(Long filmId, Long userId);
 
-    void addLIke(Long filmId, Long userId);
+    void add(Long filmId, Long userId);
 
-    void removeLike(Long filmId, Long userId);
+    void remove(Long filmId, Long userId);
 }
 

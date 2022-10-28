@@ -25,22 +25,22 @@ public class FriendDaoImpl implements FriendDao {
     }
 
     @Override
-    public void addFriend(Long userId, Long friendId) {
+    public void add(Long userId, Long friendId) {
         jdbcTemplate.update(SQL_INSERT_FRIEND, userId, friendId);
     }
 
     @Override
-    public void confirmFriend(Long userId, Long friendId) {
+    public void confirm(Long userId, Long friendId) {
         jdbcTemplate.update(SQL_CONFIRM_FRIEND, userId, friendId);
     }
 
     @Override
-    public Optional<Friend> findFriendCombination(Long userId, Long friendId) {
+    public Optional<Friend> find(Long userId, Long friendId) {
         return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_FRIEND, (rs, rowNum) -> makeFriend(rs), userId, friendId));
     }
 
     @Override
-    public void removeFriend(Long userId, Long friendId) {
+    public void remove(Long userId, Long friendId) {
         jdbcTemplate.update(SQL_REMOVE_FRIEND, userId, friendId);
     }
 

@@ -5,18 +5,11 @@ import ru.yandex.practicum.filmorate.models.User;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserDao {
-    Optional<User> findUserById(Long id);
+public interface UserDao extends Dao<User> {
 
-    List<User> findUsers();
+    Optional<List<User>> findFriends(Long userId);
 
-    List<User> findFriendsForUser(Long userId);
+    Optional<List<User>> findCommonFriends(Long firstUserId, Long secondUserId);
 
-    List<User> findCommonFriends(Long firstUserId, Long secondUserId);
-
-    void addUser(User user);
-
-    void updateUser(User user);
-
-    Optional<User> findNewUser();
+    Optional<User> findNew();
 }

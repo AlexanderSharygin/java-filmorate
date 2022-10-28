@@ -24,12 +24,12 @@ public class LikeDaoImpl implements LikeDao {
     }
 
     @Override
-    public Optional<Like> findLIke(Long filmId, Long userId) {
+    public Optional<Like> find(Long filmId, Long userId) {
         return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_LIKE, (rs, rowNum) -> makeLike(rs), userId, filmId));
     }
 
     @Override
-    public void addLIke(Long filmId, Long userId) {
+    public void add(Long filmId, Long userId) {
         jdbcTemplate.update(SQL_INSERT_LIKE, userId, filmId);
     }
 
@@ -38,7 +38,7 @@ public class LikeDaoImpl implements LikeDao {
     }
 
     @Override
-    public void removeLike(Long filmId, Long userId) {
+    public void remove(Long filmId, Long userId) {
         jdbcTemplate.update(SQL_DELETE_LIKE, userId, filmId);
     }
 }

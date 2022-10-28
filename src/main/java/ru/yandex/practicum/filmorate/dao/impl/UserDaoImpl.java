@@ -31,38 +31,38 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findUserById(Long user_id) {
+    public Optional<User> findById(Long user_id) {
         return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_USER, (rs, rowNum) -> makeUser(rs), user_id));
     }
 
     @Override
-    public void addUser(User user) {
+    public void add(User user) {
         jdbcTemplate.update(SQL_ADD_USER, user.getName(), user.getEmail(), user.getBirthday(), user.getLogin());
     }
 
     @Override
-    public void updateUser(User user) {
+    public void update(User user) {
         jdbcTemplate.update(SQL_UPDATE_USER, user.getName(), user.getEmail(), user.getBirthday(), user.getLogin(), user.getId());
     }
 
     @Override
-    public Optional<User> findNewUser() {
+    public Optional<User> findNew() {
         return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_NEWEST_USER, (rs, rowNum) -> makeUser(rs)));
     }
 
     @Override
-    public List<User> findUsers() {
-        return jdbcTemplate.query(SQL_GET_ALL_USERS, (rs, rowNum) -> makeUser(rs));
+    public Optional<List<User>> findAll() {
+        return Optional.of(jdbcTemplate.query(SQL_GET_ALL_USERS, (rs, rowNum) -> makeUser(rs)));
     }
 
     @Override
-    public List<User> findFriendsForUser(Long userId) {
-        return jdbcTemplate.query(SQL_GET_FRIENDS_FOR_USER, (rs, rowNum) -> makeUser(rs), userId);
+    public Optional<List<User>> findFriends(Long userId) {
+        return Optional.of(jdbcTemplate.query(SQL_GET_FRIENDS_FOR_USER, (rs, rowNum) -> makeUser(rs), userId));
     }
 
     @Override
-    public List<User> findCommonFriends(Long firstUserId, Long secondUserId) {
-        return jdbcTemplate.query(SQL_GET_COMMON_FRIENDS, (rs, rowNum) -> makeUser(rs), firstUserId, secondUserId);
+    public Optional<List<User>> findCommonFriends(Long firstUserId, Long secondUserId) {
+        return Optional.of(jdbcTemplate.query(SQL_GET_COMMON_FRIENDS, (rs, rowNum) -> makeUser(rs), firstUserId, secondUserId));
     }
 
     public User makeUser(ResultSet rs) throws SQLException {

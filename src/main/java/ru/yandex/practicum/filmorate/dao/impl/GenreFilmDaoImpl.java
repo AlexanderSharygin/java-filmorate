@@ -17,12 +17,12 @@ public class GenreFilmDaoImpl implements GenreFilmDao {
     }
 
     @Override
-    public void addGenreForFilm(Long filmId, Long genreId) {
+    public void addForFilm(Long filmId, Long genreId) {
         jdbcTemplate.update(SQL_INSERT_GENRE, genreId, filmId);
     }
 
     @Override
-    public void removeGenreForFilm(Long filmId) {
+    public void removeForFilm(Long filmId) {
         jdbcTemplate.update(SQL_DELETE_GENRES_FOR_FILM, filmId);
     }
 }

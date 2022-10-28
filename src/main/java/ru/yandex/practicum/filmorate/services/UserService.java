@@ -22,48 +22,34 @@ public class UserService {
     @Autowired
     public UserService(UserDao userDao) {
         this.userDao = userDao;
-
     }
 
     public List<User> getUsers() {
-        try {
-            return userDao.findUsers();
-        } catch (RuntimeException e) {
-            throw new BadRequestException("Something went wrong.");
-        }
+        return userDao.findAll().orElseThrow(() -> new BadRequestException("Something went wrong."));
     }
 
     public User getUserById(Long id) {
-        try {
-            return userDao.findUserById(id).orElse(null);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotExistException("User with id " + id + " not exists in the DB");
-        }
-
+        return userDao.findById(id).orElseThrow(() -> new NotExistException("User with id " + id + " not exists in the DB"));
     }
 
     public User addUser(User user) {
         checkName(user);
         try {
-            userDao.addUser(user);
-            return userDao.findNewUser().orElse(null);
+            userDao.add(user);
         } catch (DuplicateKeyException e) {
             throw new AlreadyExistException("User already exists in the DB");
-        } catch (RuntimeException e) {
-            throw new BadRequestException("Something went wrong.");
         }
+        return userDao.findNew().orElseThrow(() -> new BadRequestException("Something went wrong."));
     }
 
     public User updateUser(User user) {
         checkName(user);
         try {
-            userDao.updateUser(user);
-            return userDao.findUserById(user.getId()).get();
+            userDao.update(user);
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("User not exists in the DB");
-        } catch (RuntimeException e) {
-            throw new BadRequestException("Something went wrong.");
         }
+        return userDao.findNew().orElseThrow(() -> new BadRequestException("Something went wrong."));
     }
 
     private void checkName(User user) {

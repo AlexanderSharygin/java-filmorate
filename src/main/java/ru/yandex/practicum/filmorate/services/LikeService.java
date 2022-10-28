@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.services;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.LikeDao;
@@ -29,16 +28,10 @@ public class LikeService {
     }
 
     public boolean addLike(long filmId, long userId) {
-        User user;
-        Film film;
+        User user = userDao.findById(userId).orElseThrow(() -> new NotExistException("Films are not exist in the DB"));
+        Film film = filmDao.findById(filmId).orElseThrow(() -> new NotExistException("Films are not exist in the DB"));
         try {
-            user = userDao.findUserById(userId).get();
-            film = filmDao.findFilmById(filmId).get();
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotExistException("Films are not exist in the DB");
-        }
-        try {
-            likeDao.addLIke(film.getId(), user.getId());
+            likeDao.add(film.getId(), user.getId());
         } catch (DataIntegrityViolationException e) {
             throw new AlreadyExistException("User with id " + userId + " is already like film with id " + filmId);
         }
@@ -46,17 +39,9 @@ public class LikeService {
     }
 
     public boolean removeLike(long filmId, long userId) {
-        try {
-            likeDao.findLIke(filmId, userId).get();
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotExistException("User with id " + userId + " is not like film with id " + filmId);
-        }
-        try {
-            likeDao.removeLike(filmId, userId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotExistException("User with id " + userId + " is not like film with id " + filmId);
-        }
-
+        likeDao.find(filmId, userId)
+                .orElseThrow(() -> new NotExistException("User with id " + userId + " is not like film with id " + filmId));
+        likeDao.remove(filmId, userId);
         return true;
     }
 }

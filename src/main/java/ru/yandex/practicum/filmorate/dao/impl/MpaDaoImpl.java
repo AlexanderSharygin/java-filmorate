@@ -22,13 +22,13 @@ public class MpaDaoImpl implements MpaDao {
     }
 
     @Override
-    public Optional<Mpa> findMpaById(Long id) {
+    public Optional<Mpa> findById(Long id) {
         return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_MPA, (rs, rowNum) -> makeMPA(rs), id));
     }
 
     @Override
-    public List<Mpa> findAllMpa() {
-        return jdbcTemplate.query(SQL_GET_MPAs, (rs, rowNum) -> makeMPA(rs));
+    public Optional<List<Mpa>> findAll() {
+        return Optional.of(jdbcTemplate.query(SQL_GET_MPAs, (rs, rowNum) -> makeMPA(rs)));
     }
 
     private Mpa makeMPA(ResultSet rs) throws SQLException {

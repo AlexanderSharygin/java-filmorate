@@ -6,11 +6,11 @@ import java.util.Optional;
 
 public interface FriendDao {
 
-    void addFriend(Long userId, Long friendId);
+    Optional<Friend> find(Long userId, Long friendId);
 
-    void confirmFriend(Long userId, Long friendId);
+    void add(Long userId, Long friendId);
 
-    Optional<Friend> findFriendCombination(Long userId, Long friendId);
+    void confirm(Long userId, Long friendId);
 
-    void removeFriend(Long userId, Long friendId);
+    void remove(Long userId, Long friendId);
 }

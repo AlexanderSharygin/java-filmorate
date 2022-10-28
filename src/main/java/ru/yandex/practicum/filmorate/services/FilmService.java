@@ -44,34 +44,15 @@ public class FilmService {
     }
 
     public Film getFilmById(long id) {
-        Film film;
-        try {
-            film = filmDao.findFilmById(id).get();
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotExistException("Film with id " + id + " not exists in the DB");
-        }
-        try {
-            film.setGenres(genreDao.findGenresByFilmId(film.getId()));
-        } catch (RuntimeException e) {
-            film.setGenres(new ArrayList<>());
-        }
+        Film film = filmDao.findById(id)
+                .orElseThrow(() -> new NotExistException("Film with id " + id + " not exists in the DB"));
+        film.setGenres(genreDao.findByFilmId(film.getId()).orElse(new ArrayList<>()));
         return film;
     }
 
     public List<Film> getFilms() {
-        List<Film> films;
-        try {
-            films = filmDao.findFilms();
-        } catch (RuntimeException e) {
-            throw new BadRequestException("Something went wrong.");
-        }
-        for (var film : films) {
-            try {
-                film.setGenres(genreDao.findGenresByFilmId(film.getId()));
-            } catch (RuntimeException exception) {
-                film.setGenres(new ArrayList<>());
-            }
-        }
+        List<Film> films = filmDao.findAll().orElseThrow(() -> new BadRequestException("Something went wrong."));
+        films.forEach(k -> k.setGenres(genreDao.findByFilmId(k.getId()).orElse(new ArrayList<>())));
         return films;
     }
 
@@ -79,69 +60,34 @@ public class FilmService {
         validate(film);
         Film createdFilm;
         try {
-            filmDao.addFilm(film);
-            createdFilm = filmDao.findNewestFilm().get();
-        } catch (
-                DuplicateKeyException e) {
-            throw new AlreadyExistException("Film already exists in the DB");
-        } catch (
-                DataIntegrityViolationException e) {
+            filmDao.add(film);
+        } catch (DataIntegrityViolationException e) {
             throw new AlreadyExistException("Mpa rate with specified id not exists in the DB");
-        } catch (RuntimeException e) {
-            throw new BadRequestException("Something went wrong.");
         }
-        try {
-            addGenresForFilm(film, createdFilm.getId());
-        } catch (RuntimeException e) {
-            film.setGenres(new ArrayList<>());
-        }
-        try {
-            createdFilm.setGenres(genreDao.findGenresByFilmId(createdFilm.getId()));
-        } catch (RuntimeException e) {
-            createdFilm.setGenres(new ArrayList<>());
-        }
+        createdFilm = filmDao.findNew().orElseThrow(
+                () -> new AlreadyExistException("Film already exists in the DB"));
+        addGenresForFilm(film, createdFilm.getId());
+        createdFilm.setGenres(genreDao.findByFilmId(createdFilm.getId()).orElse(new ArrayList<>()));
         return createdFilm;
     }
 
     public Film updateFilm(Film film) {
         validate(film);
         try {
-            genreFilmDao.removeGenreForFilm(film.getId());
-        } catch (RuntimeException e) {
-            throw new BadRequestException("Something went wrong.");
-        }
-        try {
-            filmDao.updateFilm(film);
+            genreFilmDao.removeForFilm(film.getId());
+            filmDao.update(film);
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("Film with id " + film.getId() + " not exists in the DB");
         }
-
-        Film updatedFilm;
-        try {
-            updatedFilm = getFilmById(film.getId());
-        } catch (
-                EmptyResultDataAccessException e) {
-            throw new NotExistException("Film with id " + film.getId() + " not exists in the DB");
-        }
+        Film updatedFilm = getFilmById(film.getId());
         addGenresForFilm(film, updatedFilm.getId());
-        try {
-            updatedFilm.setGenres(genreDao.findGenresByFilmId(film.getId()));
-        } catch (RuntimeException e) {
-            updatedFilm.setGenres(new ArrayList<>());
-        }
+        updatedFilm.setGenres(genreDao.findByFilmId(film.getId()).orElse(new ArrayList<>()));
         return updatedFilm;
     }
 
     public List<Film> getPopularFilms(int count) {
-        List<Film> films;
-        try {
-            films = filmDao.findPopularFilms(count);
-        } catch (RuntimeException e) {
-            throw new BadRequestException("Something went wrong.");
-        }
-        for (var film : films) {
-            film.setGenres(genreDao.findGenresByFilmId(film.getId()));
-        }
+        List<Film> films = filmDao.findPopulars(count).orElseThrow(() -> new BadRequestException("Something went wrong."));
+        films.forEach(k -> k.setGenres(genreDao.findByFilmId(k.getId()).orElse(new ArrayList<>())));
         return films;
     }
 
@@ -158,11 +104,9 @@ public class FilmService {
         Set<Long> genreIds = new HashSet<>((oldFilm.getGenres().stream().map(Genre::getId).collect(Collectors.toList())));
         for (var genre : genreIds) {
             try {
-                genreFilmDao.addGenreForFilm(newFilmId, genre);
+                genreFilmDao.addForFilm(newFilmId, genre);
             } catch (DuplicateKeyException e) {
                 throw new AlreadyExistException("Film with genre already exists in the DB");
-            } catch (RuntimeException e) {
-                throw new BadRequestException("Something went wrong.");
             }
         }
     }
