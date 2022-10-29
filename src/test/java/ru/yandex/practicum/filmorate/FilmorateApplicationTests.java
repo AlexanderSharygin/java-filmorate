@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -287,7 +286,7 @@ class FilmorateApplicationTests {
     @AutoConfigureTestDatabase
     public void testRemoveLike() {
         likeStorage.remove(1L, 1L);
-        assertThrows(EmptyResultDataAccessException.class, () -> likeStorage.find(1L, 1L));
+       assertTrue(likeStorage.find(1L, 1L).isEmpty());
     }
 
     @Test

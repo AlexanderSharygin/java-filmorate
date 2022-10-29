@@ -29,7 +29,7 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        return userDao.findById(id).orElseThrow(()-> new NotExistException("User with id " + id + " not exists in the DB"));
+        return userDao.findById(id).orElseThrow(() -> new NotExistException("User with id " + id + " not exists in the DB"));
     }
 
     public User addUser(User user) {
@@ -49,7 +49,7 @@ public class UserService {
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("User not exists in the DB");
         }
-        return userDao.findNew().orElseThrow(() -> new BadRequestException("Something went wrong."));
+        return userDao.findById(user.getId()).orElseThrow(() -> new NotExistException("User with id" + user.getId() + " not exists in the DB"));
     }
 
     private void checkName(User user) {
