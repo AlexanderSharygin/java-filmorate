@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.MpaDao;
 import ru.yandex.practicum.filmorate.models.Mpa;
+import ru.yandex.practicum.filmorate.models.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,12 +24,19 @@ public class MpaDaoImpl implements MpaDao {
 
     @Override
     public Optional<Mpa> findById(Long id) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_MPA, (rs, rowNum) -> makeMPA(rs), id));
+        List<Mpa> mpas = jdbcTemplate.query(SQL_GET_MPA, (rs, rowNum) -> makeMPA(rs), id);
+
+        if (mpas.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(mpas.get(0));
     }
 
     @Override
     public Optional<List<Mpa>> findAll() {
-        return Optional.of(jdbcTemplate.query(SQL_GET_MPAs, (rs, rowNum) -> makeMPA(rs)));
+        List<Mpa> mpas = jdbcTemplate.query(SQL_GET_MPAs, (rs, rowNum) -> makeMPA(rs));
+        return Optional.of(mpas);
     }
 
     private Mpa makeMPA(ResultSet rs) throws SQLException {

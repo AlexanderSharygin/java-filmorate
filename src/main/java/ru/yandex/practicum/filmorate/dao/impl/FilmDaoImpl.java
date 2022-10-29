@@ -46,18 +46,31 @@ public class FilmDaoImpl implements FilmDao {
 
     @Override
     public Optional<Film> findById(Long film_id) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_FILM, (rs, rowNum) -> makeFilm(rs), film_id));
+        List<Film> films = jdbcTemplate.query(SQL_GET_FILM, (rs, rowNum) -> makeFilm(rs), film_id);
+
+        if (films.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(films.get(0));
     }
 
     @Override
     public Optional<Film> findNew() {
+        List<Film> films = jdbcTemplate.query(SQL_GET_NEWEST_FILM, (rs, rowNum) -> makeFilm(rs));
 
-        return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_NEWEST_FILM, (rs, rowNum) -> makeFilm(rs)));
+        if (films.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(films.get(0));
     }
 
     @Override
     public Optional<List<Film>> findAll() {
-        return Optional.of(jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs)));
+        List<Film> films = jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs));
+
+        return Optional.of(films);
     }
 
     @Override
@@ -74,7 +87,9 @@ public class FilmDaoImpl implements FilmDao {
 
     @Override
     public Optional<List<Film>> findPopulars(Integer count) {
-        return Optional.of(jdbcTemplate.query(SQL_GET_POPULAR_FILMS, (rs, rowNum) -> makeFilm(rs), count));
+        List<Film> films = jdbcTemplate.query(SQL_GET_POPULAR_FILMS, (rs, rowNum) -> makeFilm(rs), count);
+
+        return Optional.of(films);
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {

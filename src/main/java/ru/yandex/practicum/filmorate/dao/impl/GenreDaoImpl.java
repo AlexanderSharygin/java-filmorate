@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.models.Genre;
+import ru.yandex.practicum.filmorate.models.Like;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,17 +29,27 @@ public class GenreDaoImpl implements GenreDao {
 
     @Override
     public Optional<Genre> findById(Long id) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_GENRE, (rs, rowNum) -> makeGenre(rs), id));
+        List<Genre> genres = jdbcTemplate.query(SQL_GET_GENRE, (rs, rowNum) -> makeGenre(rs), id);
+
+        if (genres.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(genres.get(0));
     }
 
     @Override
     public Optional<List<Genre>> findByFilmId(Long id) {
-        return Optional.of(jdbcTemplate.query(SQL_GET_GENRES_FOR_FILM, (rs, rowNum) -> makeGenre(rs), id));
+        List<Genre> genres = jdbcTemplate.query(SQL_GET_GENRES_FOR_FILM, (rs, rowNum) -> makeGenre(rs), id);
+
+        return Optional.of(genres);
     }
 
     @Override
     public Optional<List<Genre>> findAll() {
-        return Optional.of(jdbcTemplate.query(SQL_GET_GENRES, (rs, rowNum) -> makeGenre(rs)));
+        List<Genre> genres = jdbcTemplate.query(SQL_GET_GENRES, (rs, rowNum) -> makeGenre(rs));
+
+        return Optional.of(genres);
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {

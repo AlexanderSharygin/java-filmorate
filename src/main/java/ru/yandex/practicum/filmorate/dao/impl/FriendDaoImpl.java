@@ -4,9 +4,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.FriendDao;
 import ru.yandex.practicum.filmorate.models.Friend;
+import ru.yandex.practicum.filmorate.models.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -36,7 +38,13 @@ public class FriendDaoImpl implements FriendDao {
 
     @Override
     public Optional<Friend> find(Long userId, Long friendId) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_FRIEND, (rs, rowNum) -> makeFriend(rs), userId, friendId));
+        List<Friend> friends = jdbcTemplate.query(SQL_GET_FRIEND, (rs, rowNum) -> makeFriend(rs), userId, friendId);
+
+        if (friends.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(friends.get(0));
     }
 
     @Override

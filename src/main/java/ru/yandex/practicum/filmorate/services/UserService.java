@@ -29,7 +29,7 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        return userDao.findById(id).orElseThrow(() -> new NotExistException("User with id " + id + " not exists in the DB"));
+        return userDao.findById(id).orElseThrow(()-> new NotExistException("User with id " + id + " not exists in the DB"));
     }
 
     public User addUser(User user) {

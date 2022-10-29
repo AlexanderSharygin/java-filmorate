@@ -4,9 +4,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.LikeDao;
 import ru.yandex.practicum.filmorate.models.Like;
+import ru.yandex.practicum.filmorate.models.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -25,7 +27,13 @@ public class LikeDaoImpl implements LikeDao {
 
     @Override
     public Optional<Like> find(Long filmId, Long userId) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_LIKE, (rs, rowNum) -> makeLike(rs), userId, filmId));
+        List<Like> likes = jdbcTemplate.query(SQL_GET_LIKE, (rs, rowNum) -> makeLike(rs), userId, filmId);
+
+        if (likes.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(likes.get(0));
     }
 
     @Override

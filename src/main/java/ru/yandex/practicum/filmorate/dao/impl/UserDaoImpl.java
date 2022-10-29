@@ -31,8 +31,14 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findById(Long user_id) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_USER, (rs, rowNum) -> makeUser(rs), user_id));
+    public Optional<User> findById(Long id) {
+        List<User> users = jdbcTemplate.query(SQL_GET_USER, (rs, rowNum) -> makeUser(rs), id);
+
+        if (users.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(users.get(0));
     }
 
     @Override
@@ -47,22 +53,33 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findNew() {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_GET_NEWEST_USER, (rs, rowNum) -> makeUser(rs)));
+        List<User> users = jdbcTemplate.query(SQL_GET_NEWEST_USER, (rs, rowNum) -> makeUser(rs));
+        if (users.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(users.get(0));
     }
 
     @Override
     public Optional<List<User>> findAll() {
-        return Optional.of(jdbcTemplate.query(SQL_GET_ALL_USERS, (rs, rowNum) -> makeUser(rs)));
+        List<User> users = jdbcTemplate.query(SQL_GET_ALL_USERS, (rs, rowNum) -> makeUser(rs));
+
+        return Optional.of(users);
     }
 
     @Override
     public Optional<List<User>> findFriends(Long userId) {
-        return Optional.of(jdbcTemplate.query(SQL_GET_FRIENDS_FOR_USER, (rs, rowNum) -> makeUser(rs), userId));
+        List<User> users = jdbcTemplate.query(SQL_GET_FRIENDS_FOR_USER, (rs, rowNum) -> makeUser(rs), userId);
+
+        return Optional.of(users);
     }
 
     @Override
     public Optional<List<User>> findCommonFriends(Long firstUserId, Long secondUserId) {
-        return Optional.of(jdbcTemplate.query(SQL_GET_COMMON_FRIENDS, (rs, rowNum) -> makeUser(rs), firstUserId, secondUserId));
+        List<User> users = jdbcTemplate.query(SQL_GET_COMMON_FRIENDS, (rs, rowNum) -> makeUser(rs), firstUserId, secondUserId);
+
+        return Optional.of(users);
     }
 
     public User makeUser(ResultSet rs) throws SQLException {
