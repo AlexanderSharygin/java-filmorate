@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.LikeDao;
 import ru.yandex.practicum.filmorate.models.Like;
-import ru.yandex.practicum.filmorate.models.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

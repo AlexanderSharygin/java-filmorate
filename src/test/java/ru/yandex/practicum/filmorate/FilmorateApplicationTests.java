@@ -8,7 +8,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import ru.yandex.practicum.filmorate.dao.*;
 import ru.yandex.practicum.filmorate.models.*;
 
@@ -17,7 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -286,7 +286,7 @@ class FilmorateApplicationTests {
     @AutoConfigureTestDatabase
     public void testRemoveLike() {
         likeStorage.remove(1L, 1L);
-       assertTrue(likeStorage.find(1L, 1L).isEmpty());
+        assertTrue(likeStorage.find(1L, 1L).isEmpty());
     }
 
     @Test
