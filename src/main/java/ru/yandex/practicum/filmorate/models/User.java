@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.models;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import ru.yandex.practicum.filmorate.utils.LocalDateDeserializer;
@@ -10,12 +11,14 @@ import ru.yandex.practicum.filmorate.utils.LocalDateSerializer;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
+@AllArgsConstructor
 public class User {
+
+    @NonNull
     private Long id;
+
     private String name;
 
     @NonNull
@@ -32,21 +35,6 @@ public class User {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate birthday;
 
-    private Set<Long> friends;
-
     public User() {
-        this.friends = new HashSet<>();
-    }
-
-
-    public User(@NonNull String login, @NonNull String email, @NonNull LocalDate birthday) {
-        this.login = login;
-        this.email = email;
-        this.birthday = birthday;
-        this.friends = new HashSet<>();
-    }
-
-    public Set<Long> getFriends() {
-        return friends;
     }
 }

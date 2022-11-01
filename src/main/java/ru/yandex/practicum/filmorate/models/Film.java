@@ -12,8 +12,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class Film {
@@ -21,6 +21,7 @@ public class Film {
 
     @NonNull
     @NotBlank
+    @Length(max = 50)
     private String name;
 
     @NonNull
@@ -34,23 +35,15 @@ public class Film {
     private LocalDate releaseDate;
 
     @Min(1)
-    private long duration;
+    private Integer duration;
 
-    private Set<Long> likeUsers;
+    @NonNull
+    private List<Genre> genres;
+
+    Mpa mpa;
 
     public Film() {
-        this.likeUsers = new HashSet<>();
-    }
-
-    public Film(@NonNull String name, @NonNull String description, @NonNull LocalDate releaseDate, long duration) {
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-        this.likeUsers = new HashSet<>();
-    }
-
-    public Set<Long> getLikeUsers() {
-        return likeUsers;
+        this.genres = new ArrayList<>();
+        mpa = new Mpa();
     }
 }
