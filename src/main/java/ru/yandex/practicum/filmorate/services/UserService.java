@@ -25,11 +25,13 @@ public class UserService {
     }
 
     public List<User> getUsers() {
-        return userDao.findAll().orElseThrow(() -> new BadRequestException("Something went wrong."));
+        return userDao.findAll();
     }
 
     public User getUserById(Long id) {
-        return userDao.findById(id).orElseThrow(() -> new NotExistException("User with id " + id + " not exists in the DB"));
+        return userDao
+                .findById(id)
+                .orElseThrow(() -> new NotExistException("User with id " + id + " not exists in the DB"));
     }
 
     public User addUser(User user) {
@@ -39,7 +41,9 @@ public class UserService {
         } catch (DuplicateKeyException e) {
             throw new AlreadyExistException("User already exists in the DB");
         }
-        return userDao.findNew().orElseThrow(() -> new BadRequestException("Something went wrong."));
+        return userDao
+                .findNew()
+                .orElseThrow(() -> new BadRequestException("Something went wrong."));
     }
 
     public User updateUser(User user) {
@@ -49,7 +53,9 @@ public class UserService {
         } catch (EmptyResultDataAccessException e) {
             throw new NotExistException("User not exists in the DB");
         }
-        return userDao.findById(user.getId()).orElseThrow(() -> new NotExistException("User with id" + user.getId() + " not exists in the DB"));
+        return userDao
+                .findById(user.getId())
+                .orElseThrow(() -> new NotExistException("User with id" + user.getId() + " not exists in the DB"));
     }
 
     private void checkName(User user) {

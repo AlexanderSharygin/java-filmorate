@@ -28,8 +28,12 @@ public class LikeService {
     }
 
     public boolean addLike(long filmId, long userId) {
-        User user = userDao.findById(userId).orElseThrow(() -> new NotExistException("Films are not exist in the DB"));
-        Film film = filmDao.findById(filmId).orElseThrow(() -> new NotExistException("Films are not exist in the DB"));
+        User user = userDao
+                .findById(userId)
+                .orElseThrow(() -> new NotExistException("Films are not exist in the DB"));
+        Film film = filmDao
+                .findById(filmId)
+                .orElseThrow(() -> new NotExistException("Films are not exist in the DB"));
         try {
             likeDao.add(film.getId(), user.getId());
         } catch (DataIntegrityViolationException e) {
@@ -39,7 +43,8 @@ public class LikeService {
     }
 
     public boolean removeLike(long filmId, long userId) {
-        likeDao.find(filmId, userId)
+        likeDao
+                .find(filmId, userId)
                 .orElseThrow(() -> new NotExistException("User with id " + userId + " is not like film with id " + filmId));
         likeDao.remove(filmId, userId);
         return true;

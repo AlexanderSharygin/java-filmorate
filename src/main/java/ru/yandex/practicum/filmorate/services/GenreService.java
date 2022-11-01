@@ -21,11 +21,12 @@ public class GenreService {
     }
 
     public Genre getGenreById(long id) {
-        return genreDao.findById(id)
+        return genreDao
+                .findById(id)
                 .orElseThrow(() -> new NotExistException("Genre with id " + id + " not exists in the DB"));
     }
 
     public List<Genre> getGenres() {
-        return genreDao.findAll().orElseThrow(() -> new BadRequestException("Something went wrong."));
+        return genreDao.findAll();
     }
 }

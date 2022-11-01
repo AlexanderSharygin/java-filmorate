@@ -19,10 +19,12 @@ public class MpaService {
     }
 
     public Mpa getMPAById(long id) {
-        return mpaDao.findById(id).orElseThrow(() -> new NotExistException("MPA with id " + id + " not exists in the DB"));
+        return mpaDao
+                .findById(id)
+                .orElseThrow(() -> new NotExistException("MPA with id " + id + " not exists in the DB"));
     }
 
     public List<Mpa> getAllMpa() {
-        return mpaDao.findAll().orElseThrow(() -> new BadRequestException("Something went wrong."));
+        return mpaDao.findAll();
     }
 }

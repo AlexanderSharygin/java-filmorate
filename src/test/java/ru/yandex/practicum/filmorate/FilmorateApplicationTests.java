@@ -62,7 +62,7 @@ class FilmorateApplicationTests {
         testUser2.setLogin("Test2");
         testUser2.setBirthday(LocalDate.parse("1980-01-01"));
         userStorage.add(testUser2);
-        List<User> users = userStorage.findAll().get();
+        List<User> users = userStorage.findAll();
         assertThat(users.size()).isEqualTo(2);
         assertThat(users.get(0).getName()).isEqualTo("Test");
         assertThat(users.get(1).getName()).isEqualTo("Test2");
@@ -132,7 +132,7 @@ class FilmorateApplicationTests {
     public void testGetFriendsForUser() {
         friendsStorage.add(1L, 2L);
         friendsStorage.add(1L, 3L);
-        List<User> users = userStorage.findFriends(1L).get();
+        List<User> users = userStorage.findFriends(1L);
         assertThat(users.size()).isEqualTo(2);
         assertThat(users.get(0).getName()).isEqualTo("Test2");
         assertThat(users.get(1).getName()).isEqualTo("Test3");
@@ -143,7 +143,7 @@ class FilmorateApplicationTests {
     @AutoConfigureTestDatabase
     public void testGetCommonFriendsForUsers() {
         friendsStorage.add(2L, 3L);
-        List<User> users = userStorage.findCommonFriends(1L, 2L).get();
+        List<User> users = userStorage.findCommonFriends(1L, 2L);
         assertThat(users.size()).isEqualTo(1);
         assertThat(users.get(0).getName()).isEqualTo("Test3");
     }
@@ -185,7 +185,7 @@ class FilmorateApplicationTests {
         film.setMpa(mpa);
         film.setGenres(List.of(genre, genre2));
         filmStorage.add(film);
-        List<Film> films = filmStorage.findAll().get();
+        List<Film> films = filmStorage.findAll();
         assertThat(films.size()).isEqualTo(2);
         assertThat(films.get(0).getName()).isEqualTo("Test");
         assertThat(films.get(1).getName()).isEqualTo("Test2");
@@ -253,7 +253,7 @@ class FilmorateApplicationTests {
     @Order(15)
     @AutoConfigureTestDatabase
     public void testGetGenres() {
-        List<Genre> genres = genreDao.findAll().get();
+        List<Genre> genres = genreDao.findAll();
         assertThat(genres.size()).isEqualTo(6);
         assertThat(genres.get(0).getName()).isEqualTo("Комедия");
         assertThat(genres.get(1).getName()).isEqualTo("Драма");
@@ -296,7 +296,7 @@ class FilmorateApplicationTests {
         likeStorage.add(1L, 1L);
         likeStorage.add(2L, 1L);
         likeStorage.add(2L, 2L);
-        List<Film> films = filmStorage.findPopulars(2).get();
+        List<Film> films = filmStorage.findPopulars(2);
         assertThat(films.size()).isEqualTo(2);
         assertThat(films.get(0).getName()).isEqualTo("Test2");
         assertThat(films.get(1).getName()).isEqualTo("Update");

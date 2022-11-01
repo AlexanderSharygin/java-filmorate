@@ -67,10 +67,9 @@ public class FilmDaoImpl implements FilmDao {
     }
 
     @Override
-    public Optional<List<Film>> findAll() {
-        List<Film> films = jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs));
+    public List<Film> findAll() {
 
-        return Optional.of(films);
+        return jdbcTemplate.query(SQL_GET_FILMS, (rs, rowNum) -> makeFilm(rs));
     }
 
     @Override
@@ -86,10 +85,8 @@ public class FilmDaoImpl implements FilmDao {
     }
 
     @Override
-    public Optional<List<Film>> findPopulars(Integer count) {
-        List<Film> films = jdbcTemplate.query(SQL_GET_POPULAR_FILMS, (rs, rowNum) -> makeFilm(rs), count);
-
-        return Optional.of(films);
+    public List<Film> findPopulars(Integer count) {
+        return jdbcTemplate.query(SQL_GET_POPULAR_FILMS, (rs, rowNum) -> makeFilm(rs), count);
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {

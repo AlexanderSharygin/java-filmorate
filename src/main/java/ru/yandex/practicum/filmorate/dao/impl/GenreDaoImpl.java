@@ -38,17 +38,16 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    public Optional<List<Genre>> findByFilmId(Long id) {
-        List<Genre> genres = jdbcTemplate.query(SQL_GET_GENRES_FOR_FILM, (rs, rowNum) -> makeGenre(rs), id);
+    public List<Genre> findByFilmId(Long id) {
 
-        return Optional.of(genres);
+        return jdbcTemplate.query(SQL_GET_GENRES_FOR_FILM, (rs, rowNum) -> makeGenre(rs), id);
     }
 
     @Override
-    public Optional<List<Genre>> findAll() {
+    public List<Genre> findAll() {
         List<Genre> genres = jdbcTemplate.query(SQL_GET_GENRES, (rs, rowNum) -> makeGenre(rs));
 
-        return Optional.of(genres);
+        return genres;
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {

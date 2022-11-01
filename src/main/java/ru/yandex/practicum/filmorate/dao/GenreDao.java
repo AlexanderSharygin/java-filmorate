@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface GenreDao {
     Optional<Genre> findById(Long id);
 
-    Optional<List<Genre>> findByFilmId(Long id);
+   List<Genre> findByFilmId(Long id);
 
-    Optional<List<Genre>> findAll();
+   List<Genre> findAll();
 }

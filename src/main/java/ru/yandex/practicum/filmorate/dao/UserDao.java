@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface UserDao extends Dao<User> {
 
-    Optional<List<User>> findFriends(Long userId);
+   List<User> findFriends(Long userId);
 
-    Optional<List<User>> findCommonFriends(Long firstUserId, Long secondUserId);
+   List<User> findCommonFriends(Long firstUserId, Long secondUserId);
 
     Optional<User> findNew();
 }

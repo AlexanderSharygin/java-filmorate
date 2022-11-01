@@ -26,8 +26,12 @@ public class FriendService {
     }
 
     public boolean addFriend(long userId, long friendId) {
-        User user = userDao.findById(userId).orElseThrow(() -> new NotExistException("User are not exist in the DB"));
-        User friend = userDao.findById(friendId).orElseThrow(() -> new NotExistException("User are not exist in the DB"));
+        User user = userDao
+                .findById(userId)
+                .orElseThrow(() -> new NotExistException("User are not exist in the DB"));
+        User friend = userDao
+                .findById(friendId)
+                .orElseThrow(() -> new NotExistException("User are not exist in the DB"));
         try {
             friendDao.add(user.getId(), friend.getId());
         } catch (DataIntegrityViolationException e) {
@@ -37,26 +41,27 @@ public class FriendService {
     }
 
     public boolean confirmFriends(long userId, long friendId) {
-        Friend friend = friendDao.find(userId, friendId)
+        Friend friend = friendDao
+                .find(userId, friendId)
                 .orElseThrow(() -> new NotExistException("User with id " + friendId + "is not a friend for " + userId));
         friendDao.confirm(friend.getUserId(), friend.getFriendId());
         return true;
     }
 
     public boolean removeFriend(long userId, long friendId) {
-        Friend friend = friendDao.find(userId, friendId)
+        Friend friend = friendDao
+                .find(userId, friendId)
                 .orElseThrow(() -> new NotExistException("User with id " + friendId + "is not a friend for " + userId));
         friendDao.remove(friend.getUserId(), friend.getFriendId());
         return true;
     }
 
     public List<User> getFriendsForUser(long userId) {
-        return userDao.findFriends(userId)
-                .orElseThrow(() -> new NotExistException("Were are not friends for user with id " + userId));
+        return userDao.findFriends(userId);
     }
 
+
     public List<User> getCommonFriends(long id, long friendId) {
-        return userDao.findCommonFriends(id, friendId)
-                .orElseThrow(() -> new NotExistException("Were are not common friends for user with id " + id + " and " + friendId));
+        return userDao.findCommonFriends(id, friendId);
     }
 }

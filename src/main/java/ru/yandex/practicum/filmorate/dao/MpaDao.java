@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface MpaDao {
     Optional<Mpa> findById(Long id);
 
-    Optional<List<Mpa>> findAll();
+    List<Mpa> findAll();
 }

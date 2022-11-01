@@ -33,9 +33,8 @@ public class MpaDaoImpl implements MpaDao {
     }
 
     @Override
-    public Optional<List<Mpa>> findAll() {
-        List<Mpa> mpas = jdbcTemplate.query(SQL_GET_MPAs, (rs, rowNum) -> makeMPA(rs));
-        return Optional.of(mpas);
+    public List<Mpa> findAll() {
+        return jdbcTemplate.query(SQL_GET_MPAs, (rs, rowNum) -> makeMPA(rs));
     }
 
     private Mpa makeMPA(ResultSet rs) throws SQLException {

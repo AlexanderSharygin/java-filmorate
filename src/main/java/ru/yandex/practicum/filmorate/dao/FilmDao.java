@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface FilmDao extends Dao<Film> {
     Optional<Film> findNew();
 
-    Optional<List<Film>> findPopulars(Integer count);
+    List<Film> findPopulars(Integer count);
 }

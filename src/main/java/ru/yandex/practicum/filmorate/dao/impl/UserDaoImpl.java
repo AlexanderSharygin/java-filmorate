@@ -62,24 +62,20 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<List<User>> findAll() {
-        List<User> users = jdbcTemplate.query(SQL_GET_ALL_USERS, (rs, rowNum) -> makeUser(rs));
-
-        return Optional.of(users);
+    public List<User> findAll() {
+        return jdbcTemplate.query(SQL_GET_ALL_USERS, (rs, rowNum) -> makeUser(rs));
     }
 
     @Override
-    public Optional<List<User>> findFriends(Long userId) {
+    public List<User> findFriends(Long userId) {
         List<User> users = jdbcTemplate.query(SQL_GET_FRIENDS_FOR_USER, (rs, rowNum) -> makeUser(rs), userId);
-
-        return Optional.of(users);
+        return users;
     }
 
     @Override
-    public Optional<List<User>> findCommonFriends(Long firstUserId, Long secondUserId) {
+    public List<User> findCommonFriends(Long firstUserId, Long secondUserId) {
         List<User> users = jdbcTemplate.query(SQL_GET_COMMON_FRIENDS, (rs, rowNum) -> makeUser(rs), firstUserId, secondUserId);
-
-        return Optional.of(users);
+        return users;
     }
 
     public User makeUser(ResultSet rs) throws SQLException {

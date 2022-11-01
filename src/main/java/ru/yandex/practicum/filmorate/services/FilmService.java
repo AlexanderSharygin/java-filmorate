@@ -46,13 +46,13 @@ public class FilmService {
     public Film getFilmById(long id) {
         Film film = filmDao.findById(id)
                 .orElseThrow(() -> new NotExistException("Film with id " + id + " not exists in the DB"));
-        film.setGenres(genreDao.findByFilmId(film.getId()).orElse(new ArrayList<>()));
+        film.setGenres(genreDao.findByFilmId(film.getId()));
         return film;
     }
 
     public List<Film> getFilms() {
-        List<Film> films = filmDao.findAll().orElseThrow(() -> new BadRequestException("Something went wrong."));
-        films.forEach(k -> k.setGenres(genreDao.findByFilmId(k.getId()).orElse(new ArrayList<>())));
+        List<Film> films = filmDao.findAll();
+        films.forEach(k -> k.setGenres(genreDao.findByFilmId(k.getId())));
         return films;
     }
 
@@ -67,7 +67,8 @@ public class FilmService {
         createdFilm = filmDao.findNew().orElseThrow(
                 () -> new AlreadyExistException("Film already exists in the DB"));
         addGenresForFilm(film, createdFilm.getId());
-        createdFilm.setGenres(genreDao.findByFilmId(createdFilm.getId()).orElse(new ArrayList<>()));
+        createdFilm.setGenres(genreDao
+                .findByFilmId(createdFilm.getId()));
         return createdFilm;
     }
 
@@ -81,13 +82,15 @@ public class FilmService {
         }
         Film updatedFilm = getFilmById(film.getId());
         addGenresForFilm(film, updatedFilm.getId());
-        updatedFilm.setGenres(genreDao.findByFilmId(film.getId()).orElse(new ArrayList<>()));
+        updatedFilm.setGenres(genreDao
+                .findByFilmId(film.getId()));
         return updatedFilm;
     }
 
     public List<Film> getPopularFilms(int count) {
-        List<Film> films = filmDao.findPopulars(count).orElseThrow(() -> new BadRequestException("Something went wrong."));
-        films.forEach(k -> k.setGenres(genreDao.findByFilmId(k.getId()).orElse(new ArrayList<>())));
+        List<Film> films = filmDao.findPopulars(count);
+        films.forEach(k -> k.setGenres(genreDao
+                .findByFilmId(k.getId())));
         return films;
     }
 
@@ -101,7 +104,9 @@ public class FilmService {
     }
 
     private void addGenresForFilm(Film oldFilm, Long newFilmId) {
-        Set<Long> genreIds = new HashSet<>((oldFilm.getGenres().stream().map(Genre::getId).collect(Collectors.toList())));
+        Set<Long> genreIds = new HashSet<>((oldFilm.getGenres().stream()
+                .map(Genre::getId)
+                .collect(Collectors.toList())));
         for (var genre : genreIds) {
             try {
                 genreFilmDao.addForFilm(newFilmId, genre);
